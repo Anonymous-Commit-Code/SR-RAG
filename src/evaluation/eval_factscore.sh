@@ -1,0 +1,1 @@
+python -m factscore.factscorer --data_path experiments/factscore.json  --model_name retrieval+ChatGPT --cache_dir experiments/cache --openai_key YOUR_OPEN_AI_KEY --verbose

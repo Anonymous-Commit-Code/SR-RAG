@@ -1,0 +1,7 @@
+openai
+requests
+tenacity
+FlagEmbedding
+faiss-gpu
+gensim
+jieba

@@ -1,0 +1,2401 @@
+==== BERT-based Evaluation ====
+Threshold = 0.7
+Precision: 0.8962
+Recall:    0.9819
+F1 Score:  0.9371
+Avg BERT Similarity: 0.9063
+
+==== ROUGE-based Evaluation ====
+Threshold (L_f): 0.5
+Precision: 0.4085
+Recall:    0.4475
+F1 Score:  0.4271
+Avg ROUGE1_f: 0.9290
+Avg ROUGE2_f: 0.5849
+Avg ROUGEL_f: 0.9240
+
+==== Concatenated Text Evaluation ====
+Avg BERT Similarity: 0.9410
+Avg ROUGE1_f: 0.5140
+Avg ROUGE2_f: 0.4141
+Avg ROUGEL_f: 0.5082
+
+==== Detailed Evaluation per Requirement ====
+[ID=1] requirement: 根据飞机当时的飞行高度、状态等运动信息确定应该进入哪一个飞行阶段。
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9318, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=2] requirement: 当飞行高度大于150m，起落架压缩信号为假，并且飞行阶段不大于下降段三个条件同时满足时，根据DH值进行阶段转换。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.8687, ROUGE1_f = 0.9231, ROUGE2_f = 0.7273, ROUGEL_f = 0.9231
+-----------------------------------------
+
+[ID=3] requirement: 当DH>10m时，转入下降段，并将空速控制积分器清零，软化时限设为2s。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 0.8000, recall = 0.8000, f1 = 0.8000
+  -> Concat BERT similarity = 0.8908, ROUGE1_f = 0.9524, ROUGE2_f = 0.9474, ROUGEL_f = 0.9524
+-----------------------------------------
+
+[ID=4] requirement: 当DH<-10m时，转入爬升2段，并将空速控制积分器清零，软化时限设为2s。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9344, ROUGE1_f = 0.9091, ROUGE2_f = 0.5806, ROUGEL_f = 0.7879
+-----------------------------------------
+
+[ID=5] requirement: 当-10m ≤ DH ≤ 10m时，转入定高段，将定高控制积分器清零，软化时限设为2s。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.5000, recall = 0.5000, f1 = 0.5000
+  -> Concat BERT similarity = 0.9580, ROUGE1_f = 0.6957, ROUGE2_f = 0.5714, ROUGEL_f = 0.6957
+-----------------------------------------
+
+[ID=6] requirement: 当飞行高度不大于150m时，根据当前的阶段标志和当前的飞行高度、空速等状态信息进行阶段转换处理。
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> Concat BERT similarity = 0.9840, ROUGE1_f = 0.8571, ROUGE2_f = 0.8000, ROUGEL_f = 0.8571
+-----------------------------------------
+
+[ID=7] requirement: 在非遥控模式阶段转换处理中，可能会出现一系列的阶段转换，直至转到和当前状态所适应的飞行阶段。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9163, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=8] requirement: 在飞机已经进入下滑阶段时，根据当前的飞行状态进行阶段转换处理。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9680, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=9] requirement: 若飞行高度大于决断高度（40m），则控制飞机进入复飞程序。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.9184, ROUGE1_f = 1.0000, ROUGE2_f = 0.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=10] requirement: 若飞行高度不大于决断高度，则根据当前的阶段标志和飞行高度进行阶段转换处理。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9527, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=11] requirement: 记录切换前的给定姿态角（滚转、偏航和俯仰）旧值，作为软化起点。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9313, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=12] requirement: 与不带内回路遥控模式之间切换时，记录切换前的舵偏指令旧值，作为软化起点。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9613, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=13] requirement: 与带内回路的遥控模式之间切换时，记录切换前的给定姿态角（滚转、偏航和俯仰）旧值，作为软化起点。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9322, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=14] requirement: 带内回路遥控与不带内回路遥控模式之间切换时，记录切换前的舵偏指令旧值，作为软化起点。
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9419, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=15] requirement: 有阶段转换或发生与遥控模式有关的控制模式切换时，记录转换前的节风门偏度指令旧值，作为软化起点。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9387, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=16] requirement: FCC 采集必要的飞机运动信息，与要求的运动相比较，得到飞机实际运动与理想运动的偏差，然后根据该偏差，通过解算控制律，得到控制信号，并将该控制信号输入到相关舵机，使操纵面按一定的规律偏转，从而实现对飞机姿态和运动的控制。
+  -> ref_count = 4, model_count = 5
+  -> BERT matched_pairs = 4, precision = 0.8000, recall = 1.0000, f1 = 0.8889
+  -> ROUGE matched_pairs = 3, precision = 0.6000, recall = 0.7500, f1 = 0.6667
+  -> Concat BERT similarity = 0.9295, ROUGE1_f = 0.7500, ROUGE2_f = 0.6667, ROUGEL_f = 0.7500
+-----------------------------------------
+
+[ID=17] requirement: 当飞机在地面等待阶段时，升降舵偏角指令、副翼偏角指令和方向舵偏角指令均置为 0°。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.7500, recall = 0.7500, f1 = 0.7500
+  -> Concat BERT similarity = 0.8715, ROUGE1_f = 0.8571, ROUGE2_f = 0.8000, ROUGEL_f = 0.8571
+-----------------------------------------
+
+[ID=18] requirement: 系统应能够实时采集和处理飞机的运动信息，包括但不限于位置、速度、姿态等数据。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 0.7500, f1 = 0.7500
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9558, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=19] requirement: 系统应能够根据飞行阶段的不同，调整控制策略和参数，确保飞机在各个阶段的稳定性和安全性。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9713, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=20] requirement: 纵向控制规律：δz = KJ (J-Jg) + Kwz . wz
+  -> ref_count = 2, model_count = 4
+  -> BERT matched_pairs = 2, precision = 0.5000, recall = 1.0000, f1 = 0.6667
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.5000, f1 = 0.3333
+  -> Concat BERT similarity = 0.8958, ROUGE1_f = 0.8000, ROUGE2_f = 0.2500, ROUGEL_f = 0.8000
+-----------------------------------------
+
+[ID=21] requirement: 横侧向控制规律：δx = KY . (Y - Yg)
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.5000, recall = 0.5000, f1 = 0.5000
+  -> Concat BERT similarity = 0.9481, ROUGE1_f = 0.7273, ROUGE2_f = 0.7000, ROUGEL_f = 0.7273
+-----------------------------------------
+
+[ID=22] requirement: 横侧向控制规律：δy = KyY . (Y - Yg) + Kywy . wy
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.9551, ROUGE1_f = 0.6667, ROUGE2_f = 0.6250, ROUGEL_f = 0.6667
+-----------------------------------------
+
+[ID=23] requirement: 系统应能够根据当前飞行状态和目标状态计算出舵偏角δz、δx和δy。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.5000, recall = 0.5000, f1 = 0.5000
+  -> Concat BERT similarity = 0.9179, ROUGE1_f = 0.6667, ROUGE2_f = 0.6250, ROUGEL_f = 0.6667
+-----------------------------------------
+
+[ID=24] requirement: 系统需要根据给定的俯仰角 Jg 和滚转角 Yg 以及方向舵控制量 yg，通过双线性变换法进行离散化，计算出 δz (k)、δx (k) 和 δy (k) 的值。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9347, ROUGE1_f = 0.9000, ROUGE2_f = 0.8621, ROUGEL_f = 0.9000
+-----------------------------------------
+
+[ID=25] requirement: 系统需要在起飞离地段，根据不同的飞行阶段设置不同的给定姿态角，具体如下：纵向 Jg = 4.5°，横侧向 yg = 0°。
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 2, precision = 0.5000, recall = 0.6667, f1 = 0.5714
+  -> Concat BERT similarity = 0.9570, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=26] requirement: 系统需要根据侧偏距 Dz 和侧偏移速度 Dz 以及 Δy，通过公式计算出 yg 的值。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.7500, recall = 0.7500, f1 = 0.7500
+  -> Concat BERT similarity = 0.9525, ROUGE1_f = 0.8889, ROUGE2_f = 0.8000, ROUGEL_f = 0.8148
+-----------------------------------------
+
+[ID=27] requirement: 系统应支持在起飞离地段通过节风门微调量更改节风门量，更改限幅值为[-15%，0%]
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2000, recall = 0.2000, f1 = 0.2000
+  -> Concat BERT similarity = 0.9532, ROUGE1_f = 0.6667, ROUGE2_f = 0.5000, ROUGEL_f = 0.6667
+-----------------------------------------
+
+[ID=28] requirement: 系统应支持爬升1段的自主节风门控制
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.4000, recall = 0.4000, f1 = 0.4000
+  -> Concat BERT similarity = 0.9079, ROUGE1_f = 0.8000, ROUGE2_f = 0.6667, ROUGEL_f = 0.8000
+-----------------------------------------
+
+[ID=29] requirement: 系统应支持在爬升1段通过节风门微调量更改节风门量，更改限幅值为[-15%，0%]
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.5000, recall = 0.5000, f1 = 0.5000
+  -> Concat BERT similarity = 0.9226, ROUGE1_f = 0.6667, ROUGE2_f = 0.4000, ROUGEL_f = 0.6667
+-----------------------------------------
+
+[ID=30] requirement: 系统应支持纵向和横侧向的离散化计算
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9602, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=31] requirement: 系统应支持计算爬升时的给定空速
+  -> ref_count = 2, model_count = 3
+  -> BERT matched_pairs = 2, precision = 0.6667, recall = 1.0000, f1 = 0.8000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9517, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=32] requirement: 系统应支持航向偏差的计算和处理
+  -> ref_count = 1, model_count = 4
+  -> BERT matched_pairs = 1, precision = 0.2500, recall = 1.0000, f1 = 0.4000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9004, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=33] requirement: Md2(k) = KvI  . Md1(k)
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9646, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=34] requirement: Md 2(k )限幅[- XfSita, XfSita]
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9259, ROUGE1_f = 0.9412, ROUGE2_f = 0.9375, ROUGEL_f = 0.9412
+-----------------------------------------
+
+[ID=35] requirement: Md 3(k ) = Kv  . [vk (k ) -vg (k )]+ Md 2(k )
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9771, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=36] requirement: Md 3(k )限幅[- XfSita, XfSita]
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.8564, ROUGE1_f = 0.8333, ROUGE2_f = 0.6471, ROUGEL_f = 0.8333
+-----------------------------------------
+
+[ID=37] requirement: Jg (k ) = Md 3(k )
+  -> ref_count = 4, model_count = 5
+  -> BERT matched_pairs = 4, precision = 0.8000, recall = 1.0000, f1 = 0.8889
+  -> ROUGE matched_pairs = 4, precision = 0.8000, recall = 1.0000, f1 = 0.8889
+  -> Concat BERT similarity = 0.9418, ROUGE1_f = 0.6047, ROUGE2_f = 0.3902, ROUGEL_f = 0.6047
+-----------------------------------------
+
+[ID=38] requirement: δp (k) = 115%
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9422, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=39] requirement: Md1(k ) = Kg1 . Dz(k )
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9719, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=40] requirement: Md1(k ) 限幅[- XfCs,+XfCs]
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9681, ROUGE1_f = 0.8750, ROUGE2_f = 0.8000, ROUGEL_f = 0.8750
+-----------------------------------------
+
+[ID=41] requirement: Md 2(k ) = D&Z  (k ) + Md1(k )  . Kg 2
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9713, ROUGE1_f = 0.6667, ROUGE2_f = 0.5714, ROUGEL_f = 0.6667
+-----------------------------------------
+
+[ID=42] requirement: Md 2(k )限幅[-XfGama, +XfGama]
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9110, ROUGE1_f = 0.9130, ROUGE2_f = 0.8636, ROUGEL_f = 0.9130
+-----------------------------------------
+
+[ID=43] requirement: Md3(k) = ((2 - T)Md3(k - 1) + T.Md 2(k) + T.Md 2(k - 1)) /(T + 2)
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2000, recall = 0.2000, f1 = 0.2000
+  -> Concat BERT similarity = 0.8800, ROUGE1_f = 0.3860, ROUGE2_f = 0.2857, ROUGEL_f = 0.3860
+-----------------------------------------
+
+[ID=44] requirement: 航向控制：yg ＝0°
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.5000, recall = 0.5000, f1 = 0.5000
+  -> Concat BERT similarity = 0.9662, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=45] requirement: δp  = 100%
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> Concat BERT similarity = 0.9844, ROUGE1_f = 0.8333, ROUGE2_f = 0.8000, ROUGEL_f = 0.8333
+-----------------------------------------
+
+[ID=46] requirement: 该阶段过程中，可通过节风门微调量进行调整
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9085, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=47] requirement: 更改限幅值为[-10%，0%]
+  -> ref_count = 4, model_count = 3
+  -> BERT matched_pairs = 3, precision = 1.0000, recall = 0.7500, f1 = 0.8571
+  -> ROUGE matched_pairs = 3, precision = 1.0000, recall = 0.7500, f1 = 0.8571
+  -> Concat BERT similarity = 0.9704, ROUGE1_f = 0.7143, ROUGE2_f = 0.6667, ROUGEL_f = 0.7143
+-----------------------------------------
+
+[ID=48] requirement: Md1(k) = Kg1 * Dz(k)，Md1(k) 限幅[- XfCs, XfCs]
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 0.8000, recall = 0.8000, f1 = 0.8000
+  -> Concat BERT similarity = 0.9467, ROUGE1_f = 0.8065, ROUGE2_f = 0.8000, ROUGEL_f = 0.8065
+-----------------------------------------
+
+[ID=49] requirement: Md2(k) 限幅[- XfGama, XfGama]
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9451, ROUGE1_f = 0.9412, ROUGE2_f = 0.8750, ROUGEL_f = 0.9412
+-----------------------------------------
+
+[ID=50] requirement: Yg(k) = -Md3(k)
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9221, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=51] requirement: yg(k) = 0°
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9497, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 0.9375
+-----------------------------------------
+
+[ID=52] requirement: δp(k) = 100%
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9661, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=53] requirement: 上下划线部分均限幅 [- XfSita, XfSita]
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.7500, recall = 0.7500, f1 = 0.7500
+  -> Concat BERT similarity = 0.9693, ROUGE1_f = 0.8571, ROUGE2_f = 0.8333, ROUGEL_f = 0.8571
+-----------------------------------------
+
+[ID=54] requirement: hg 为给定高度，取自目标航路点高度
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9172, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=55] requirement: ug 为定高时的给定空速，由飞机飞行性能计算得到，数据参见附录，并对边界点进行限幅
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9392, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=56] requirement: δp 限幅处理：5000、6000、7000、8000 米高度缺省的最小节风门限幅值分别为：12.5%、27.5%、42.5%、57.5%，中间通过线性插值处理；最大节风门限幅为 100%
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 0.8000, recall = 0.8000, f1 = 0.8000
+  -> Concat BERT similarity = 0.9212, ROUGE1_f = 0.7347, ROUGE2_f = 0.6809, ROUGEL_f = 0.7347
+-----------------------------------------
+
+[ID=57] requirement: 幅值可通过节风门微调量更改，5000 米以上，更改量为[0%， 40%]；5000 米以下，不能更改。
+  -> ref_count = 5, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 0.8000, f1 = 0.8889
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2000, f1 = 0.2222
+  -> Concat BERT similarity = 0.9278, ROUGE1_f = 0.8000, ROUGE2_f = 0.7500, ROUGEL_f = 0.8000
+-----------------------------------------
+
+[ID=58] requirement: Md2(k) = KhdI . Md1(k)，Md2(k)限幅[-XfSita, XfSita]
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9540, ROUGE1_f = 0.9643, ROUGE2_f = 0.9259, ROUGEL_f = 0.8929
+-----------------------------------------
+
+[ID=59] requirement: Md3(k) = Khd . [h(k) - hg(k)] + Md2(k)，Md3(k)限幅[-XfSita, XfSita]
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.7500, recall = 0.7500, f1 = 0.7500
+  -> Concat BERT similarity = 0.9717, ROUGE1_f = 0.8315, ROUGE2_f = 0.8276, ROUGEL_f = 0.8315
+-----------------------------------------
+
+[ID=60] requirement: Jg(k) = -Md3(k)
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9407, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=61] requirement: 当|DH|>50m时，飞行阶段由定高段向爬升2或者下降段转换
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.8719, ROUGE1_f = 0.8571, ROUGE2_f = 0.8421, ROUGEL_f = 0.8571
+-----------------------------------------
+
+[ID=62] requirement: Md2(k) = Kp1I . Md1(k)，Md2(k)限幅[Xf, Xfx]
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9535, ROUGE1_f = 0.9286, ROUGE2_f = 0.9268, ROUGEL_f = 0.9286
+-----------------------------------------
+
+[ID=63] requirement: 飞行在五边航线时的情况，纵向：以上下划线部分均限幅[-XfSita, XfSita]
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 2, precision = 0.5000, recall = 0.6667, f1 = 0.5714
+  -> Concat BERT similarity = 0.9453, ROUGE1_f = 0.8000, ROUGE2_f = 0.7500, ROUGEL_f = 0.8000
+-----------------------------------------
+
+[ID=64] requirement: 系统应能够计算并提供五边航线飞行高度 200m 的速度解算关系。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.6000, recall = 0.6000, f1 = 0.6000
+  -> Concat BERT similarity = 0.9218, ROUGE1_f = 0.7500, ROUGE2_f = 0.6667, ROUGEL_f = 0.7500
+-----------------------------------------
+
+[ID=65] requirement: 系统应能够实现横侧向控制，与爬升 2 段相同。
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9839, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=66] requirement: 系统应能够实现节风门空速闭环控制，其中给定空速 ug 由飞机飞行性能计算得到，数据参见附录的五边飞行速度。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 0.7500, f1 = 0.7500
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.8712, ROUGE1_f = 1.0000, ROUGE2_f = 0.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=67] requirement: 系统应能够实现离散化计算，包括 Md2(k)、Md3(k) 和 Jg(k) 的计算，并对 Md2(k) 和 Md3(k) 进行限幅处理。
+  -> ref_count = 4, model_count = 5
+  -> BERT matched_pairs = 4, precision = 0.8000, recall = 1.0000, f1 = 0.8889
+  -> ROUGE matched_pairs = 4, precision = 0.8000, recall = 1.0000, f1 = 0.8889
+  -> Concat BERT similarity = 0.9476, ROUGE1_f = 0.7931, ROUGE2_f = 0.7500, ROUGEL_f = 0.7586
+-----------------------------------------
+
+[ID=68] requirement: 系统应能够实现下降段的纵向控制，与爬升 1 段相同，其中给定空速 ug 由飞机飞行性能计算得到，并对边界点进行限幅。
+  -> ref_count = 3, model_count = 5
+  -> BERT matched_pairs = 3, precision = 0.6000, recall = 1.0000, f1 = 0.7500
+  -> ROUGE matched_pairs = 1, precision = 0.2000, recall = 0.3333, f1 = 0.2500
+  -> Concat BERT similarity = 0.8951, ROUGE1_f = 1.0000, ROUGE2_f = 0.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=69] requirement: 系统应能够实现下降段的横侧向控制，与爬升 2 段相同。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9499, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=70] requirement: 系统应能够实现定节风门控制，按最小节风门限幅值收节风门，该最小节风门限幅值可通过节风门微调量更改，其缺省值应按 5000、6000、7000、8000 米高度提供，中间通过线性插值处理。5000 米以上，下降时更改量为[-10%。
+  -> ref_count = 4, model_count = 5
+  -> BERT matched_pairs = 4, precision = 0.8000, recall = 1.0000, f1 = 0.8889
+  -> ROUGE matched_pairs = 2, precision = 0.4000, recall = 0.5000, f1 = 0.4444
+  -> Concat BERT similarity = 0.9245, ROUGE1_f = 0.7500, ROUGE2_f = 0.7143, ROUGEL_f = 0.7500
+-----------------------------------------
+
+[ID=71] requirement: 飞行阶段确定功能需求：根据飞机的位置信息和运动参数信息自动确定当前飞行阶段。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9694, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=72] requirement: 地面等待阶段：在起飞前和完全着陆后，飞机处于停机状态。
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9674, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=73] requirement: 起飞地面段（起飞滑跑段）：通过左右差动刹车和偏转方向舵控制飞机相对跑道中线的侧偏距及偏航角，纵向按给定俯仰角控制飞机。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9425, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=74] requirement: 起飞离地段：从高度和空速达到一定值到安全高度，主要控制飞机以一定的俯仰角爬升。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9209, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=75] requirement: 爬升1段：从安全高度（80m）开始到襟翼收起的阶段，主要控制飞机继续爬升，纵向转为空速控制，依次收起落架和襟翼。
+  -> ref_count = 3, model_count = 3
+  -> BERT matched_pairs = 3, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9580, ROUGE1_f = 0.8889, ROUGE2_f = 0.8571, ROUGEL_f = 0.6667
+-----------------------------------------
+
+[ID=76] requirement: 爬升2段：从襟翼收起到高度达到要求的巡航高度，或者从一个高度爬到另一个较高的高度，纵向按给定的空速控制，横侧向控制飞机使飞机沿着预先装订的航线飞行。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9196, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=77] requirement: 定高阶段：纵向控制飞机的高度和空速，横侧向进行侧偏距控制，使飞机按要求的高度和空速飞行。
+  -> ref_count = 2, model_count = 4
+  -> BERT matched_pairs = 2, precision = 0.5000, recall = 1.0000, f1 = 0.6667
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9542, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=78] requirement: 在 5000 米以下下降时，节风门限幅为不小于 6%，且更改量为[-6.5%，10%]。
+  -> ref_count = 2, model_count = 4
+  -> BERT matched_pairs = 2, precision = 0.5000, recall = 1.0000, f1 = 0.6667
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.5000, f1 = 0.3333
+  -> Concat BERT similarity = 0.8768, ROUGE1_f = 0.5333, ROUGE2_f = 0.4615, ROUGEL_f = 0.5333
+-----------------------------------------
+
+[ID=79] requirement: 飞机穿越 5000 米高度时，将节风门微调量以 5%/s 的速度线性减至零。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9811, ROUGE1_f = 0.7059, ROUGE2_f = 0.5333, ROUGEL_f = 0.7059
+-----------------------------------------
+
+[ID=80] requirement: 下滑 1 段纵向控制与五边定高相同，给定高度参见第六分册的下滑线处理部分。
+  -> ref_count = 2, model_count = 3
+  -> BERT matched_pairs = 2, precision = 0.6667, recall = 1.0000, f1 = 0.8000
+  -> ROUGE matched_pairs = 1, precision = 0.3333, recall = 0.5000, f1 = 0.4000
+  -> Concat BERT similarity = 0.9416, ROUGE1_f = 0.5000, ROUGE2_f = 0.0000, ROUGEL_f = 0.5000
+-----------------------------------------
+
+[ID=81] requirement: 下滑 1 段横侧向控制与爬升 2 段相同。
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.3333, f1 = 0.2857
+  -> Concat BERT similarity = 0.9528, ROUGE1_f = 0.8000, ROUGE2_f = 0.6667, ROUGEL_f = 0.8000
+-----------------------------------------
+
+[ID=82] requirement: 下滑 1 段节风门空速闭环控制公式为 δp = Kp (vg - vk)，δp 限幅 [12.5%，100%]，给定空速参见附录的下滑速度。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2000, recall = 0.2000, f1 = 0.2000
+  -> Concat BERT similarity = 0.8521, ROUGE1_f = 0.6207, ROUGE2_f = 0.5926, ROUGEL_f = 0.6207
+-----------------------------------------
+
+[ID=83] requirement: 下滑 2 段纵向控制与下滑 1 段相同。
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> Concat BERT similarity = 0.9609, ROUGE1_f = 0.7500, ROUGE2_f = 0.0000, ROUGEL_f = 0.7500
+-----------------------------------------
+
+[ID=84] requirement: 下滑 2 段横侧向滚转控制结构见图 3-6，航向控制公式为 yg = - (Kyz .Δy + KyzI∫ Kys .Δydt + Kyzd . wy)，其中下划线处限幅 [- XfFxd , XfFxd]。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.7500, recall = 0.7500, f1 = 0.7500
+  -> Concat BERT similarity = 0.9645, ROUGE1_f = 0.8857, ROUGE2_f = 0.8529, ROUGEL_f = 0.8857
+-----------------------------------------
+
+[ID=85] requirement: 下滑 2 段节风门空速闭环控制与下滑 1 段相同。
+  -> ref_count = 1, model_count = 4
+  -> BERT matched_pairs = 1, precision = 0.2500, recall = 1.0000, f1 = 0.4000
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 1.0000, f1 = 0.4000
+  -> Concat BERT similarity = 0.9115, ROUGE1_f = 0.5000, ROUGE2_f = 0.0000, ROUGEL_f = 0.5000
+-----------------------------------------
+
+[ID=86] requirement: 离散化公式为 Md2(k) = KxzI . Md1(k)，Md2(k) 限幅 [- XfGama / 0.6, + XfGama]。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9507, ROUGE1_f = 0.9767, ROUGE2_f = 0.9762, ROUGEL_f = 0.9767
+-----------------------------------------
+
+[ID=87] requirement: 计算 Md3(k) = Kxz * Dz(k)
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9868, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=88] requirement: 计算 Md4(k) = Md2(k) + Md3(k) + Kxzd * Dz(k)
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2000, recall = 0.2000, f1 = 0.2000
+  -> Concat BERT similarity = 0.9331, ROUGE1_f = 0.5484, ROUGE2_f = 0.5333, ROUGEL_f = 0.5484
+-----------------------------------------
+
+[ID=89] requirement: 对 Md5(k) 进行限幅处理，限幅范围为 [-XfGama, XfGama]
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9841, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=90] requirement: 计算 yg(k) = -Md5(k)
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9715, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=91] requirement: 计算 Md2(k) = KyzI * Md1(k)
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9741, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=92] requirement: 对 Md2(k) 进行限幅处理，限幅范围为 [-XfFxd, XfFxd]
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9287, ROUGE1_f = 0.9091, ROUGE2_f = 0.8000, ROUGEL_f = 0.9091
+-----------------------------------------
+
+[ID=93] requirement: 计算 Md3(k) = Kyz * Δy(k) + Md2(k) + Kyzd * wy(k)
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.4000, recall = 0.4000, f1 = 0.4000
+  -> Concat BERT similarity = 0.9676, ROUGE1_f = 0.6842, ROUGE2_f = 0.6757, ROUGEL_f = 0.6842
+-----------------------------------------
+
+[ID=94] requirement: 对 Md3(k) 进行限幅处理，限幅范围为 [-XfFxd, XfFxd]
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 0.8000, recall = 0.8000, f1 = 0.8000
+  -> Concat BERT similarity = 0.9301, ROUGE1_f = 0.7273, ROUGE2_f = 0.5000, ROUGEL_f = 0.7273
+-----------------------------------------
+
+[ID=95] requirement: 计算 yg(k) = -Md3(k)
+  -> ref_count = 4, model_count = 5
+  -> BERT matched_pairs = 4, precision = 0.8000, recall = 1.0000, f1 = 0.8889
+  -> ROUGE matched_pairs = 4, precision = 0.8000, recall = 1.0000, f1 = 0.8889
+  -> Concat BERT similarity = 0.9719, ROUGE1_f = 0.8889, ROUGE2_f = 0.8824, ROUGEL_f = 0.8889
+-----------------------------------------
+
+[ID=96] requirement: 在拉平段纵向控制中，计算 h& 为经过惯导垂直加速度补偿后的无线电高度表升降速度
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.6000, recall = 0.6000, f1 = 0.6000
+  -> Concat BERT similarity = 0.9745, ROUGE1_f = 0.8571, ROUGE2_f = 0.8000, ROUGEL_f = 0.8571
+-----------------------------------------
+
+[ID=97] requirement: 在拉平段纵向控制中，计算 vyg 为给定升降速度，vyg = vyt + (h - ht)(vyf - vyt)
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.6000, recall = 0.6000, f1 = 0.6000
+  -> Concat BERT similarity = 0.9276, ROUGE1_f = 0.7619, ROUGE2_f = 0.7368, ROUGEL_f = 0.7619
+-----------------------------------------
+
+[ID=98] requirement: 在拉平段纵向控制中，计算 vygSemi 为给定升降速度自动修正量
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9475, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=99] requirement: 在拉平段纵向控制中，计算 duy 为给定升降加速度
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.7500, recall = 0.7500, f1 = 0.7500
+  -> Concat BERT similarity = 0.9699, ROUGE1_f = 0.8571, ROUGE2_f = 0.8000, ROUGEL_f = 0.8571
+-----------------------------------------
+
+[ID=100] requirement: 当飞行高度小于 2.1 米时，给定升降速度自动修正量 vygSemi 开始接入，并根据飞机的俯仰角依据下式计算后限幅至[－2，2]。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 0.8000, recall = 0.8000, f1 = 0.8000
+  -> Concat BERT similarity = 0.9622, ROUGE1_f = 0.8148, ROUGE2_f = 0.6400, ROUGEL_f = 0.7407
+-----------------------------------------
+
+[ID=101] requirement: 如果此时惯导加速度无效，则不加入升降加速度的反馈。
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9317, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=102] requirement: δp = Kp (vg - vk) + f(J)，δp 限幅为[3%, 100 %]
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.7500, recall = 0.7500, f1 = 0.7500
+  -> Concat BERT similarity = 0.9586, ROUGE1_f = 0.7200, ROUGE2_f = 0.6250, ROUGEL_f = 0.6800
+-----------------------------------------
+
+[ID=103] requirement: vg = Vt + (h - ht)(Vs - Vt) / (hf - ht)
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.6000, recall = 0.6000, f1 = 0.6000
+  -> Concat BERT similarity = 0.9704, ROUGE1_f = 0.7761, ROUGE2_f = 0.7385, ROUGEL_f = 0.7761
+-----------------------------------------
+
+[ID=104] requirement: 若出现升降速度自动修正量 vygSemi 的计算中 J < 3.5 的情况，则将节风门量 δp 收为零。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9301, ROUGE1_f = 0.9697, ROUGE2_f = 0.9677, ROUGEL_f = 0.9697
+-----------------------------------------
+
+[ID=105] requirement: 横侧向控制与下滑 2 段相同。
+  -> ref_count = 2, model_count = 4
+  -> BERT matched_pairs = 2, precision = 0.5000, recall = 1.0000, f1 = 0.6667
+  -> ROUGE matched_pairs = 2, precision = 0.5000, recall = 1.0000, f1 = 0.6667
+  -> Concat BERT similarity = 0.9592, ROUGE1_f = 0.8000, ROUGE2_f = 0.6667, ROUGEL_f = 0.8000
+-----------------------------------------
+
+[ID=106] requirement: 离散化 vyg
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9664, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=107] requirement: 计算(k) = vyt + (h(k) - ht )(vyf  - vyt ) /(hf  - ht )
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9313, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=108] requirement: Md 2(k ) = KLI  . Md 1(k )
+  -> ref_count = 4, model_count = 5
+  -> BERT matched_pairs = 4, precision = 0.8000, recall = 1.0000, f1 = 0.8889
+  -> ROUGE matched_pairs = 3, precision = 0.6000, recall = 0.7500, f1 = 0.6667
+  -> Concat BERT similarity = 0.9262, ROUGE1_f = 0.4643, ROUGE2_f = 0.1481, ROUGEL_f = 0.4643
+-----------------------------------------
+
+[ID=109] requirement: Md 2(k ) 限幅[- XfSitaF , XfSitaF ]
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9688, ROUGE1_f = 0.9545, ROUGE2_f = 0.9048, ROUGEL_f = 0.9545
+-----------------------------------------
+
+[ID=110] requirement: dvyg (k) = h&(k)(vyf   - vyt ) /(hf  - ht )
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9321, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=111] requirement: Md3(k ) = Md 2(k ) + KL  . [vyg (k ) - h&(k )]+ KLd  . [dvyg (k ) - &(k )]
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9808, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=112] requirement: Md 4(k ) = [(22.0 - T). Md 4(k - 1) + (T + 4). Md 3(k ) + (T - 4). Md 3(k - 1)]/(22.0 + T)
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.4000, recall = 0.4000, f1 = 0.4000
+  -> Concat BERT similarity = 0.9545, ROUGE1_f = 0.4217, ROUGE2_f = 0.2927, ROUGEL_f = 0.4217
+-----------------------------------------
+
+[ID=113] requirement: Md 4(k ) 限幅[- XfSitaF ,  XfSitaF ]
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9421, ROUGE1_f = 0.8571, ROUGE2_f = 0.8485, ROUGEL_f = 0.8571
+-----------------------------------------
+
+[ID=114] requirement: Jg (k ) = Md 4(k )
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9570, ROUGE1_f = 0.6522, ROUGE2_f = 0.3636, ROUGEL_f = 0.6522
+-----------------------------------------
+
+[ID=115] requirement: δp (k ) = Kp (vg (k ) -vk (k ))+ f (J(k ))
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9605, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=116] requirement: δp (k )限幅[3%, 100 % ]
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9674, ROUGE1_f = 0.9474, ROUGE2_f = 0.8889, ROUGEL_f = 0.9474
+-----------------------------------------
+
+[ID=117] requirement: f (J(k )) = 3J(k )
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 0.8000, recall = 0.8000, f1 = 0.8000
+  -> Concat BERT similarity = 0.9500, ROUGE1_f = 0.8627, ROUGE2_f = 0.8571, ROUGEL_f = 0.8627
+-----------------------------------------
+
+[ID=118] requirement: 在拉平段结束时刻，系统需要根据δx 0 计算副翼舵偏回路的地偏转指令。
+  -> ref_count = 4, model_count = 5
+  -> BERT matched_pairs = 4, precision = 0.8000, recall = 1.0000, f1 = 0.8889
+  -> ROUGE matched_pairs = 1, precision = 0.2000, recall = 0.2500, f1 = 0.2222
+  -> Concat BERT similarity = 0.9301, ROUGE1_f = 1.0000, ROUGE2_f = 0.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=119] requirement: 系统需要计算yg值，公式为yg = - (Kyz .Δy + KyzI∫ Kys .Δydt + Kyzd . wy)，且yg值需限幅在[- XfFxd , XfFxd]范围内。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.8534, ROUGE1_f = 0.2609, ROUGE2_f = 0.2273, ROUGEL_f = 0.2609
+-----------------------------------------
+
+[ID=120] requirement: 节风门空速闭环控制在拉平段期间应与拉平段相同。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9733, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=121] requirement: 离散化过程中，Md 2(k) = KyzI . Md1(k)，且Md 2(k)需限幅在[- XfFxd , XfFxd]范围内。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.6000, recall = 0.6000, f1 = 0.6000
+  -> Concat BERT similarity = 0.9018, ROUGE1_f = 0.4308, ROUGE2_f = 0.2857, ROUGEL_f = 0.4308
+-----------------------------------------
+
+[ID=122] requirement: 离散化过程中，Md 3(k) = Kyz . Δy(k) + Md 2(k) + Kyzd . wy (k)，且Md 3(k)需限幅在[- XfFxd , XfFxd]范围内。
+  -> ref_count = 3, model_count = 3
+  -> BERT matched_pairs = 3, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.6667, recall = 0.6667, f1 = 0.6667
+  -> Concat BERT similarity = 0.9681, ROUGE1_f = 0.7561, ROUGE2_f = 0.7500, ROUGEL_f = 0.7561
+-----------------------------------------
+
+[ID=123] requirement: 离散化过程中，yg (k) = -Md 3(k)。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9589, ROUGE1_f = 0.6667, ROUGE2_f = 0.4118, ROUGEL_f = 0.6667
+-----------------------------------------
+
+[ID=124] requirement: 着陆滑跑纵向控制与起飞地面段相同。
+  -> ref_count = 3, model_count = 3
+  -> BERT matched_pairs = 3, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9774, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=125] requirement: 着陆滑跑横侧向控制中，yg在2秒内由-δx 0 / Ky线性减至0。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2000, recall = 0.2000, f1 = 0.2000
+  -> Concat BERT similarity = 0.9256, ROUGE1_f = 0.8462, ROUGE2_f = 0.5000, ROUGEL_f = 0.6923
+-----------------------------------------
+
+[ID=126] requirement: 着陆滑跑横侧向控制中，yg (k) = Kyg (Kz . Dz (k) + Kz . Dz (k) - K . Δy(k) - K . wy (k)) + 0.5yg 0，其中yg 0为滚转改平段结束时方向舵通道外回路控制量。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.9318, ROUGE1_f = 0.6000, ROUGE2_f = 0.5000, ROUGEL_f = 0.6000
+-----------------------------------------
+
+[ID=127] requirement: 发动机空中起动过程中，节风门控制按照起动流程控制，发动机空中起动成功后飞机退出飘落转入相应阶段，节风门控制按照相应阶段控制；若发动机空中起动失败，则将节风门位置置为 0％。
+  -> ref_count = 4, model_count = 5
+  -> BERT matched_pairs = 4, precision = 0.8000, recall = 1.0000, f1 = 0.8889
+  -> ROUGE matched_pairs = 1, precision = 0.2000, recall = 0.2500, f1 = 0.2222
+  -> Concat BERT similarity = 0.9805, ROUGE1_f = 1.0000, ROUGE2_f = 0.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=128] requirement: 当自主控制不能达到满意的控制效果时，可采用人工修正控制对自主控制进行微量的修正，其修正量通过三个遥控操纵杆通道(升降舵操纵量、副翼操纵量、方向舵操纵量) 和空速修正组合指令进入飞控计算机, 并作相应的比例转换后进入控制律中，从而达到对控制效果修正的目的，在不同飞行阶段修正项的意义是不一样的。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9460, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=129] requirement: 对应每个飞行阶段的控制需要有不同的人工修正量，人工修正量与操纵量的对应关系是线性的。
+  -> ref_count = 2, model_count = 4
+  -> BERT matched_pairs = 2, precision = 0.5000, recall = 1.0000, f1 = 0.6667
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9357, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=130] requirement: 人工修正控制采用的控制规律与自动控制规律相同（式 2-1，式 2-2，式 2-3），只在相应控制量中加入了修正量。
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9155, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=131] requirement: 指令控制模式是飞机在巡航过程中，根据当时的实际情况需要通过指令控制改变飞机的飞行状态或飞行位置的一种控制模式。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9284, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=132] requirement: 指令控制模式不改变自主控制模式下的控制律结构。
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9640, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=133] requirement: 设置的指令控制类指令有侧向。
+  -> ref_count = 1, model_count = 4
+  -> BERT matched_pairs = 1, precision = 0.2500, recall = 1.0000, f1 = 0.4000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9471, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=134] requirement: 支持“左盘旋”、“右盘旋”、“8 字飞”、“临时航路点” 和纵向的“定高”、“高度设置”、以及速度控制的“定速”、“速度设置”等指令控制模式。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 4, precision = 0.8000, recall = 0.8000, f1 = 0.8000
+  -> ROUGE matched_pairs = 2, precision = 0.4000, recall = 0.4000, f1 = 0.4000
+  -> Concat BERT similarity = 0.9454, ROUGE1_f = 0.6667, ROUGE2_f = 0.5000, ROUGEL_f = 0.6667
+-----------------------------------------
+
+[ID=135] requirement: 在自主控制或指令控制模式下，从爬升 2 段到飞完航线切入五边航线（不含）之间的航段，发送上述指令中的任意一个均可转入指令控制模式。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.9132, ROUGE1_f = 0.4000, ROUGE2_f = 0.0000, ROUGEL_f = 0.4000
+-----------------------------------------
+
+[ID=136] requirement: 在爬升 1 段，仅“定速”、“空速设置”指令有效，其余指令无效。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 0.8000, recall = 0.8000, f1 = 0.8000
+  -> Concat BERT similarity = 0.9719, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=137] requirement: 在指令控制模式下，可以重新发送相同类型的指令，新的指令将取代旧的指令。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 0.7500, f1 = 0.7500
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9536, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=138] requirement: 在“定高”指令控制时，飞行控制律中的给定高度取为收到“定高”指令时刻的飞行高度。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 0.7500, f1 = 0.7500
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9801, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=139] requirement: 在“高度设置”指令控制时，飞行控制律中的给定高度取为所设置的高度值。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9073, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=140] requirement: 自主控制模式下的给定高度为目标航路点的高度。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9706, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=141] requirement: 在指令控制模式下，导航算法或航点切换方法可以根据指令进行变化，但控制律与自主控制相同。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.8994, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=142] requirement: 飞行控制律中的给定空速在“定速”指令控制时取为收到“定速”指令时刻的空速值
+  -> ref_count = 5, model_count = 6
+  -> BERT matched_pairs = 5, precision = 0.8333, recall = 1.0000, f1 = 0.9091
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.8797, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=143] requirement: 飞行控制律中的给定空速在“速度设置”时取为所设置的空速值
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9451, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=144] requirement: 飞行控制律中的给定空速在自主控制时为根据飞行性能计算的存储在飞控计算机中的数值
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9779, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=145] requirement: 空速设置限幅值为（25m/s, 65m/s）
+  -> ref_count = 4, model_count = 5
+  -> BERT matched_pairs = 4, precision = 0.8000, recall = 1.0000, f1 = 0.8889
+  -> ROUGE matched_pairs = 3, precision = 0.6000, recall = 0.7500, f1 = 0.6667
+  -> Concat BERT similarity = 0.9628, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=146] requirement: 发送“取消定高”指令时，从“定高”或“高度设置”指令控制中退出，给定高度取为目标航路点的高度
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9193, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=147] requirement: 发送“取消定速”指令时，从“定速”或“速度设置”指令控制中退出，给定速度取值与自主控制相同
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9849, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=148] requirement: 发送“恢复航线”指令时，从侧向指令控制中退出，并从当前位置切入原来的航线到点
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9742, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=149] requirement: “取消定高”、“取消定速”和“恢复航线”指令需在指令控制模式下且已发送过相应的进入指令控制的指令后才有效
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9086, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=150] requirement: “取消定高”、“取消定速”和“恢复航线”指令有效处理后，只有在纵向、侧向、速度三方面均退出指令控制状态下，控制模式才恢复为自主控制，否则保持指令控制模式
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9332, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=151] requirement: 遥控控制模式分为带内回路遥控和不带内回路遥控两种模式
+  -> ref_count = 1, model_count = 4
+  -> BERT matched_pairs = 1, precision = 0.2500, recall = 1.0000, f1 = 0.4000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.8658, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=152] requirement: 不带内回路遥控直接控制舵面（升降舵，副翼和方向舵），将遥控操纵量进行合适的比例转换。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9524, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=153] requirement: 带内回路遥控将遥控操纵量转换为对应的给定姿态角，通过自主控制规律（式（2-1）、式（2-2）和式（2-3））解算出相应的舵偏控制指令控制舵面。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.4000, recall = 0.4000, f1 = 0.4000
+  -> Concat BERT similarity = 0.9364, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=154] requirement: 两种遥控模式下，对节风门的遥控是一样的。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9765, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=155] requirement: 遥控控制有最高的控制权限，可以在任何时候任何情况切换到遥控控制模式。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9756, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=156] requirement: 带内回路遥控在飞机处于地面状态时，方向舵偏角指令计算公式为：δy = KyY . Y + [Kyg (K . (-yg) + Ky . wy)] + Kywy . wy。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.8951, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=157] requirement: 给定姿态角和节风门偏度δp与遥控操纵量的线性对应关系。
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> Concat BERT similarity = 0.9607, ROUGE1_f = 0.8571, ROUGE2_f = 0.8000, ROUGEL_f = 0.8571
+-----------------------------------------
+
+[ID=158] requirement: 系统应能够沿着预先装订的航线飞行。
+  -> ref_count = 3, model_count = 6
+  -> BERT matched_pairs = 3, precision = 0.5000, recall = 1.0000, f1 = 0.6667
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9550, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=159] requirement: 系统在五边飞行段应控制飞机处于定高飞行状态，并在导航方式为五边导航时，飞行阶段回报为五边飞行阶段，控制方式同定高段。
+  -> ref_count = 5, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 0.8000, f1 = 0.8889
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9753, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=160] requirement: 系统在下滑1段应控制飞机沿预先设定的下滑线按给定空速从五边飞行高度下滑到下滑1段结束高度100m，纵向控制飞机跟踪下滑线高度，横侧向消除飞机相对机场轴线的侧偏距，在有侧风的情况下，飞机无侧滑角。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9486, ROUGE1_f = 0.5000, ROUGE2_f = 0.4444, ROUGEL_f = 0.5000
+-----------------------------------------
+
+[ID=161] requirement: 系统在下滑2段应控制飞机从下滑1段结束高度100m至拉平高度17m，使飞机以定直侧滑的方式下滑。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.6000, recall = 0.6000, f1 = 0.6000
+  -> Concat BERT similarity = 0.9308, ROUGE1_f = 0.5625, ROUGE2_f = 0.2667, ROUGEL_f = 0.5625
+-----------------------------------------
+
+[ID=162] requirement: 系统在拉平阶段应将飞机的轨迹倾角拉平，使飞机以小的下降速度着陆，横侧向的控制方式与下滑后段相同。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9877, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=163] requirement: 系统在滚转改平阶段应从滚转改平高度1.5m到满足转换到着陆滑跑段的条件。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.9682, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=164] requirement: 系统在着陆滑跑阶段应收到遥控接地信号或起落架全压缩信号或者链路异常75拍后，进入着陆滑跑段，以方向舵和刹车纠正飞机相对跑道轴线的侧偏距及偏航角。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2000, recall = 0.2000, f1 = 0.2000
+  -> Concat BERT similarity = 0.9407, ROUGE1_f = 0.3333, ROUGE2_f = 0.0000, ROUGEL_f = 0.3333
+-----------------------------------------
+
+[ID=165] requirement: 系统在飘落阶段应控制飞机在空中停车后进入飘落段。
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9786, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=166] requirement: 遥控操纵量对应舵面偏角指令和节风门偏度指令，舵偏角和节风门指令与遥控操纵量的线性对应关系为：δz (－28º~+28º)，δx (－20º~+20º)，δy (－25º~+25º)，δp (0～115％)。限幅为[－30°,+20 °]。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.6000, recall = 0.6000, f1 = 0.6000
+  -> Concat BERT similarity = 0.9283, ROUGE1_f = 0.6977, ROUGE2_f = 0.4286, ROUGEL_f = 0.6977
+-----------------------------------------
+
+[ID=167] requirement: 升降舵操纵量(0～255)，副翼操纵量(0～255)，方向舵操纵量(0～255)，节风门操纵量(0～255)。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.9585, ROUGE1_f = 0.5714, ROUGE2_f = 0.5000, ROUGEL_f = 0.5714
+-----------------------------------------
+
+[ID=168] requirement: 通过遥控开关指令分别将副翼和升降舵偏度衰减为上述值的 2/3，从而对应关系变为：δz (－20º~+20º)，δx (－13º~+13º)，δy (－25º~+25º)，δp (0～115％)。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.9596, ROUGE1_f = 0.8000, ROUGE2_f = 0.7857, ROUGEL_f = 0.8000
+-----------------------------------------
+
+[ID=169] requirement: 升降舵操纵量(0～255)、副翼操纵量(0～255)、方向舵操纵量(0～255)、节风门操纵量(0～255)的控制范围和精度要求
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9294, ROUGE1_f = 0.4000, ROUGE2_f = 0.2500, ROUGEL_f = 0.4000
+-----------------------------------------
+
+[ID=170] requirement: 自主控制、人工修正控制、指令控制、姿态遥控和舵面遥控五种飞行控制模式的实现
+  -> ref_count = 6, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 0.6667, f1 = 0.8000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9000, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=171] requirement: 控制模式切换时的特别处理
+  -> ref_count = 3, model_count = 5
+  -> BERT matched_pairs = 3, precision = 0.6000, recall = 1.0000, f1 = 0.7500
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9632, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=172] requirement: 自主控制模式下，从爬升 2 段（含）到飞完航线切入五边航线（不含）之间的阶段发送 3.2.4 所述指令中的任意一个均可转入指令控制模式
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 2, precision = 0.5000, recall = 0.6667, f1 = 0.5714
+  -> Concat BERT similarity = 0.9096, ROUGE1_f = 0.7273, ROUGE2_f = 0.6667, ROUGEL_f = 0.7273
+-----------------------------------------
+
+[ID=173] requirement: 指令控制模式下，发“自主控制”指令可以切换回自主控制模式
+  -> ref_count = 2, model_count = 4
+  -> BERT matched_pairs = 2, precision = 0.5000, recall = 1.0000, f1 = 0.6667
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9395, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=174] requirement: 自主控制与指令控制之间的切换不改变控制律，不需要作软化处理
+  -> ref_count = 2, model_count = 4
+  -> BERT matched_pairs = 2, precision = 0.5000, recall = 1.0000, f1 = 0.6667
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9490, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=175] requirement: 自主控制模式时，发“人工修正”指令可以切换到人工修正模式
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 0.7500, f1 = 0.7500
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9592, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=176] requirement: 人工修正切换到自主控制时，在控制律中去掉人工修正量，不需要作软化处理。
+  -> ref_count = 2, model_count = 4
+  -> BERT matched_pairs = 2, precision = 0.5000, recall = 1.0000, f1 = 0.6667
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9446, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=177] requirement: 自主控制切换到姿态遥控时，控制律结构发生变化，需要对给定姿态角进行软化，软化时间为2秒，并且需要进行节风门指令软化，软化时间为2秒。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.9705, ROUGE1_f = 0.5000, ROUGE2_f = 0.0000, ROUGEL_f = 0.5000
+-----------------------------------------
+
+[ID=178] requirement: 姿态遥控切换到自主控制时，控制律结构发生变化，需要对给定姿态角进行软化，软化时间为2秒。如果飞机在巡航（爬升2、定高和下降），则将从点经纬度改为飞机所处当前位置经纬度，以引导飞机向原来的到点飞行。需要进行节风门指令软化，软化时间为2秒。
+  -> ref_count = 5, model_count = 6
+  -> BERT matched_pairs = 5, precision = 0.8333, recall = 1.0000, f1 = 0.9091
+  -> ROUGE matched_pairs = 4, precision = 0.6667, recall = 0.8000, f1 = 0.7273
+  -> Concat BERT similarity = 0.8802, ROUGE1_f = 0.8333, ROUGE2_f = 0.8000, ROUGEL_f = 0.8333
+-----------------------------------------
+
+[ID=179] requirement: 自主控制切换到舵面遥控时，转为直接舵面控制，对舵偏指令进行软化，软化时间为2秒，并且需要进行节风门指令软化，软化时间为2秒。
+  -> ref_count = 4, model_count = 5
+  -> BERT matched_pairs = 4, precision = 0.8000, recall = 1.0000, f1 = 0.8889
+  -> ROUGE matched_pairs = 4, precision = 0.8000, recall = 1.0000, f1 = 0.8889
+  -> Concat BERT similarity = 0.9136, ROUGE1_f = 0.8889, ROUGE2_f = 0.8571, ROUGEL_f = 0.8889
+-----------------------------------------
+
+[ID=180] requirement: 舵面遥控切换到自主控制时，需要进行具体的操作，但文档未详细描述。建议进一步明确具体的控制律变化和软化处理。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9486, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=181] requirement: 发“自主控制”指令可实现该切换，退出直接舵面控制，对舵偏指令进行软化，软化时间设为 2s，如果此时飞机在巡航（爬升 2、定高和下降），则将从点经纬度改为飞机所处当前位置经纬度，以引导飞机向原来的到点飞行。需要进行节风门指令软化，软化时间设为 2s。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 0.8000, recall = 0.8000, f1 = 0.8000
+  -> Concat BERT similarity = 0.9350, ROUGE1_f = 0.8333, ROUGE2_f = 0.6000, ROUGEL_f = 0.8333
+-----------------------------------------
+
+[ID=182] requirement: 发“舵面遥控”指令可实现该切换，转为直接舵面控制，对舵偏指令进行软化，软化时间设为 2s。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.5000, recall = 0.5000, f1 = 0.5000
+  -> Concat BERT similarity = 0.9647, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=183] requirement: 发“姿态遥控”指令可实现该切换，退出直接舵面控制，对舵偏指令进行软化，软化时间设为 2s。
+  -> ref_count = 3, model_count = 5
+  -> BERT matched_pairs = 3, precision = 0.6000, recall = 1.0000, f1 = 0.7500
+  -> ROUGE matched_pairs = 2, precision = 0.4000, recall = 0.6667, f1 = 0.5000
+  -> Concat BERT similarity = 0.9511, ROUGE1_f = 0.8000, ROUGE2_f = 0.6667, ROUGEL_f = 0.8000
+-----------------------------------------
+
+[ID=184] requirement: 发“姿态遥控”指令可实现该切换，对给定姿态角进行软化，软化时间设为 2s。需要进行节风门指令软化，软化时间设为 2s。
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 2, precision = 0.5000, recall = 0.6667, f1 = 0.5714
+  -> Concat BERT similarity = 0.9192, ROUGE1_f = 0.6667, ROUGE2_f = 0.5000, ROUGEL_f = 0.6667
+-----------------------------------------
+
+[ID=185] requirement: 发“舵面遥控”指令可实现该切换，对舵偏指令进行软化，软化时间设为 2s。需要进行节风门指令软化，软化时间设为 2s。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.8360, ROUGE1_f = 0.5000, ROUGE2_f = 0.0000, ROUGEL_f = 0.5000
+-----------------------------------------
+
+[ID=186] requirement: 发“姿态遥控”指令可实现该切换，对给定姿态角进行软化，软化时间设为 2s。需要进行节风门指令软化，软化时间设为 2s。
+  -> ref_count = 3, model_count = 5
+  -> BERT matched_pairs = 3, precision = 0.6000, recall = 1.0000, f1 = 0.7500
+  -> ROUGE matched_pairs = 3, precision = 0.6000, recall = 1.0000, f1 = 0.7500
+  -> Concat BERT similarity = 0.9043, ROUGE1_f = 0.7500, ROUGE2_f = 0.6667, ROUGEL_f = 0.7500
+-----------------------------------------
+
+[ID=187] requirement: 发“舵面遥控”指令可实现该切换，对舵偏指令进行软化，软化时间设为 2s。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.7500, recall = 0.7500, f1 = 0.7500
+  -> Concat BERT similarity = 0.9222, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=188] requirement: 发“舵面遥控”指令可实现该切换，对舵偏指令进行软化，软化时间设为 2s。
+  -> ref_count = 4, model_count = 6
+  -> BERT matched_pairs = 4, precision = 0.6667, recall = 1.0000, f1 = 0.8000
+  -> ROUGE matched_pairs = 2, precision = 0.3333, recall = 0.5000, f1 = 0.4000
+  -> Concat BERT similarity = 0.8969, ROUGE1_f = 0.8000, ROUGE2_f = 0.6667, ROUGEL_f = 0.8000
+-----------------------------------------
+
+[ID=189] requirement: 需要进行节风门指令软化，软化时间设为 2s。
+  -> ref_count = 2, model_count = 4
+  -> BERT matched_pairs = 2, precision = 0.5000, recall = 1.0000, f1 = 0.6667
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9315, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=190] requirement: 控制模式切换时的软化优先级高于阶段转换，故模式切换时若伴随着阶段转换，则只进行模式切换的软化。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9622, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=191] requirement: 指令控制切换为自主控制时，若飞机处于定高状态，则退出定高；若飞机处于定速状态，则退出定速；若飞机处于左盘、右盘、8 字飞、飞向临时航点状态，则恢复航线，进行一般导航。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 0.7500, f1 = 0.7500
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.9598, ROUGE1_f = 0.5000, ROUGE2_f = 0.0000, ROUGEL_f = 0.5000
+-----------------------------------------
+
+[ID=192] requirement: 自主及指令控制切换为遥控时，若导航解算标志为无导航解算（0），则将从、到点更新为五边 6、7 点；指令控制切换为遥控时，侧向控制置为一般导航，纵向控制置为正常，定速控制置为正常。若侧向控制为向临时航点飞行，则到点更新为原来的到点。
+  -> ref_count = 3, model_count = 3
+  -> BERT matched_pairs = 3, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9683, ROUGE1_f = 0.7143, ROUGE2_f = 0.5000, ROUGEL_f = 0.7143
+-----------------------------------------
+
+[ID=193] requirement: 为了平滑数据，防止数据的突跳，需要对数据进行软化（淡入淡出）处理。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9776, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=194] requirement: 在软化时间内，旧值和新值两者加权处理得到软化后的值：软化后的值＝旧值×（1－t /软化时限）＋新值×t /软化时限
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.6000, recall = 0.6000, f1 = 0.6000
+  -> Concat BERT similarity = 0.9778, ROUGE1_f = 0.7500, ROUGE2_f = 0.7273, ROUGEL_f = 0.7500
+-----------------------------------------
+
+[ID=195] requirement: 通过积分器初值的软化方法，专用于向控制律中带有积分器的阶段切换时给定姿态角（Jg, Yg, yg）和节风门指令的软化
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2000, recall = 0.2000, f1 = 0.2000
+  -> Concat BERT similarity = 0.9015, ROUGE1_f = 0.5000, ROUGE2_f = 0.4000, ROUGEL_f = 0.5000
+-----------------------------------------
+
+[ID=196] requirement: 当向有积分器的控制律切换时，为了平滑过渡相应的给定姿态角Jg 或Yg 或yg，不是简单地把将要转入的下一阶段控制律的积分器初值设为零，而是通过令下一阶段的给定姿态角等于上一阶段的给定姿态角来解算出积分器的初值
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.9606, ROUGE1_f = 0.5000, ROUGE2_f = 0.4000, ROUGEL_f = 0.5000
+-----------------------------------------
+
+[ID=197] requirement: 在起飞离地段与爬升1段切换时，设起飞离地段转入爬升1前一时刻解算出的给定俯仰角为Jg，空速积分器的初值为x，则x这样计算：x = Jg - Kv [nk (k) - ng (k)] / K vI
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.7500, recall = 0.7500, f1 = 0.7500
+  -> Concat BERT similarity = 0.9125, ROUGE1_f = 0.6957, ROUGE2_f = 0.3810, ROUGEL_f = 0.6087
+-----------------------------------------
+
+[ID=198] requirement: 高度类型切换时，两种高度类型数据的软化。
+  -> ref_count = 3, model_count = 5
+  -> BERT matched_pairs = 3, precision = 0.6000, recall = 1.0000, f1 = 0.7500
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9683, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=199] requirement: 与舵面遥控进行切换时舵偏指令和节风门偏度指令的软化。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9499, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=200] requirement: 自主转姿态遥控、姿态遥控转自主时给定姿态角（Jg, Yg, yg）的软化。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.7500, recall = 0.7500, f1 = 0.7500
+  -> Concat BERT similarity = 0.9916, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=201] requirement: 转着陆滑跑段时给定姿态角（Jg, Yg, yg）的软化，其它阶段转换时的给定姿态角（Yg, yg）和节风门偏度指令的软化。
+  -> ref_count = 5, model_count = 8
+  -> BERT matched_pairs = 5, precision = 0.6250, recall = 1.0000, f1 = 0.7692
+  -> ROUGE matched_pairs = 5, precision = 0.6250, recall = 1.0000, f1 = 0.7692
+  -> Concat BERT similarity = 0.9467, ROUGE1_f = 0.9500, ROUGE2_f = 0.9474, ROUGEL_f = 0.9500
+-----------------------------------------
+
+[ID=202] requirement: 向纵向控制律带有积分器的阶段切换时给定俯仰角角的软化。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9739, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=203] requirement: 爬升转定高、下降转定高时节风门偏度指令的软化。爬升转定高时节风门控制积分器初值直接赋为 100.0，下降转定高时积分器初值直接赋为 50.0。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.9445, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=204] requirement: 姿态遥控转自主时，纵向控制积分器清零。若为定高阶段，节风门控制积分器初值直接赋为 50.0。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9398, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=205] requirement: 爬升转定高时节风门偏度指令的软化是两种软化方法同时进行，下降转定高时节风门偏度指令的软化仅采用了积分器初值软化法。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9608, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=206] requirement: 为了抑制传感器的噪声以及外界对传感器输出数据的干扰，需要对输入的部分传感器数据进行滤波处理。
+  -> ref_count = 5, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 0.8000, f1 = 0.8889
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9619, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=207] requirement: 采用前置滤波器对输入数据进行滤波，滤波器的截止频率 wc 通过 Tustin 双线性变换后得到滤波公式 y(k) = a0y(k-1) + a1[x(k)+x(k-1)]，其中 a0 和 a1 根据 wc 的不同取不同的值。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9007, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=208] requirement: 对不同的传感器数据选用不同的 wc，相应的 a0 和 a1 也不同，具体参数见表 3-21。
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 2, precision = 0.5000, recall = 0.6667, f1 = 0.5714
+  -> Concat BERT similarity = 0.9707, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=209] requirement: 使用惯导垂直加速度对无线电高度表升降速度和大气机升降速度进行补偿，以提高其精度。
+  -> ref_count = 4, model_count = 6
+  -> BERT matched_pairs = 4, precision = 0.6667, recall = 1.0000, f1 = 0.8000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9888, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=210] requirement: 实现组合滤波的方法，包括读取惯导垂直加速度数据，并将其应用于无线电高度表和大气机升降速度的补偿计算。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9085, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=211] requirement: 系统需要根据垂直加速度对大气机升降速度进行补偿
+  -> ref_count = 4, model_count = 5
+  -> BERT matched_pairs = 4, precision = 0.8000, recall = 1.0000, f1 = 0.8889
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9740, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=212] requirement: 系统需要根据垂直加速度对无线电高度表升降速度进行补偿
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9678, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=213] requirement: 系统需要采用Tustin双线性变换得到统一滤波公式
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 0.8000, recall = 0.8000, f1 = 0.8000
+  -> Concat BERT similarity = 0.9608, ROUGE1_f = 0.8889, ROUGE2_f = 0.8571, ROUGEL_f = 0.8889
+-----------------------------------------
+
+[ID=214] requirement: 系统需要计算H1(k)和Hbc(k)的值
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9889, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=215] requirement: 当H分别取为Hb和Hr时，系统需要计算补偿后升降速度Hbc，分别对应uy和h。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9785, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=216] requirement: 系统需要在每个采样周期T=20ms时，根据公式计算H1(k)和H2(k)的值。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9447, ROUGE1_f = 0.9545, ROUGE2_f = 0.9524, ROUGEL_f = 0.8636
+-----------------------------------------
+
+[ID=217] requirement: 在自主控制、人工修正和指令控制模式下进行飞行阶段的确定
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9890, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=218] requirement: 在遥控模式（带内回路遥控和不带内回路遥控）下飞行阶段的确定与其不同
+  -> ref_count = 1, model_count = 4
+  -> BERT matched_pairs = 1, precision = 0.2500, recall = 1.0000, f1 = 0.4000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9521, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=219] requirement: 当控制模式相互之间切换时，进行相应的处理和阶段确定
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9482, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=220] requirement: 在飞行阶段转换时和控制模式切换时对给定姿态角、舵面控制指令或者节风门进行软化
+  -> ref_count = 3, model_count = 3
+  -> BERT matched_pairs = 3, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9767, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=221] requirement: 选取两种软化方式，一种用于与包含内回路的控制模式间切换或飞行阶段转换时的软化，另一种用于与不带内回路遥控模式切换时的软化
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.8676, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=222] requirement: 飞控系统必须具备陷波滤波功能，以衰减机体结构振动模态信号，保证系统稳定。
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.8946, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=223] requirement: 飞控系统中的升降舵通道应包含两个陷波滤波器，一个位于控制律输出与舵回路之间，另一个位于升降加速度前置滤波器之后。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9059, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=224] requirement: 控制律输出与舵回路之间的陷波滤波器参数应设置为 x1z = 0.1，x2z = 0.6，wn1z = 24.3，wn2z = 24.3。
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> Concat BERT similarity = 0.9081, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=225] requirement: 升降加速度前置滤波器之后的陷波滤波器的具体参数应在系统中配置。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9393, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=226] requirement: 拉平阶段纵向控制律中的升降加速度需要经过升降加速度陷波滤波器 2 的处理。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.7500, recall = 0.7500, f1 = 0.7500
+  -> Concat BERT similarity = 0.9638, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=227] requirement: 副翼通道的陷波滤波器参数为 x1x = 0.1，x2x = 0.6，wn1x = 24.3，wn2x = 24.3。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.8627, ROUGE1_f = 0.4000, ROUGE2_f = 0.3793, ROUGEL_f = 0.4000
+-----------------------------------------
+
+[ID=228] requirement: 方向舵通道的陷波滤波器参数为 x1y = 0.1，x2y = 0.5999922，wn1y = 40.81997，wn2y = 25.11991。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.5000, recall = 0.5000, f1 = 0.5000
+  -> Concat BERT similarity = 0.9500, ROUGE1_f = 0.5714, ROUGE2_f = 0.5556, ROUGEL_f = 0.5714
+-----------------------------------------
+
+[ID=229] requirement: 采用 Tustin 双线性变换后得到的离散化陷波滤波器公式为 δd(k) = [- Kd12δd(k-1) - Kd22δd(k-2) + Kd01δ(k) + Kd11δ(k-1) + Kd]。
+  -> ref_count = 4, model_count = 5
+  -> BERT matched_pairs = 4, precision = 0.8000, recall = 1.0000, f1 = 0.8889
+  -> ROUGE matched_pairs = 1, precision = 0.2000, recall = 0.2500, f1 = 0.2222
+  -> Concat BERT similarity = 0.9730, ROUGE1_f = 0.5000, ROUGE2_f = 0.4839, ROUGEL_f = 0.5000
+-----------------------------------------
+
+[ID=230] requirement: 软件系统需要实现升降加速度陷波滤波器 2 的功能，包括参数设置和滤波处理。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9772, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=231] requirement: 软件系统需要实现副翼通道的陷波滤波器功能，包括参数设置和滤波处理。
+  -> ref_count = 3, model_count = 5
+  -> BERT matched_pairs = 3, precision = 0.6000, recall = 1.0000, f1 = 0.7500
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9622, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=232] requirement: 软件系统需要实现方向舵通道的陷波滤波器功能，包括参数设置和滤波处理。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9411, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=233] requirement: 软件系统需要实现 Tustin 双线性变换的离散化处理，生成离散化的陷波滤波器公式。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.9225, ROUGE1_f = 0.6667, ROUGE2_f = 0.0000, ROUGEL_f = 0.6667
+-----------------------------------------
+
+[ID=234] requirement: 根据飞行过程不同阶段的需要或遥控控制的需要来收放襟翼，襟翼有 0°、15°和 40°三个偏角位置。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.8872, ROUGE1_f = 0.8571, ROUGE2_f = 0.8000, ROUGEL_f = 0.8571
+-----------------------------------------
+
+[ID=235] requirement: 系统应能够根据飞行阶段识别模块提供的信息，自动调整襟翼的偏角位置。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9489, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=236] requirement: 系统应支持通过遥控控制手动调整襟翼的偏角位置。
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9438, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=237] requirement: 系统应能够接收和处理飞行阶段识别模块提供的数据，以确定当前的飞行阶段。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9835, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=238] requirement: 系统应能够根据当前的飞行阶段，选择合适的襟翼偏角位置。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9517, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=239] requirement: 系统应能够记录和显示襟翼的当前偏角位置。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9594, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=240] requirement: 飞机在地面等待阶段，襟翼置为 0°。
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 2, precision = 0.5000, recall = 0.6667, f1 = 0.5714
+  -> Concat BERT similarity = 0.9457, ROUGE1_f = 0.8000, ROUGE2_f = 0.6667, ROUGEL_f = 0.8000
+-----------------------------------------
+
+[ID=241] requirement: 飞机执行起飞时，从地面滑跑阶段开始，襟翼偏至 15°。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9406, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=242] requirement: 飞至爬升 1 段时开始计时，如果在 1 分钟内起落架收起，则从收起时刻起延时 5s 后收襟翼为 0°。
+  -> ref_count = 2, model_count = 4
+  -> BERT matched_pairs = 2, precision = 0.5000, recall = 1.0000, f1 = 0.6667
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.5000, f1 = 0.3333
+  -> Concat BERT similarity = 0.9008, ROUGE1_f = 0.5000, ROUGE2_f = 0.4286, ROUGEL_f = 0.5000
+-----------------------------------------
+
+[ID=243] requirement: 若 1 分钟后起落架仍然没有收起，则直接收襟翼为 0°。
+  -> ref_count = 2, model_count = 4
+  -> BERT matched_pairs = 2, precision = 0.5000, recall = 1.0000, f1 = 0.6667
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.5000, f1 = 0.3333
+  -> Concat BERT similarity = 0.9474, ROUGE1_f = 0.8000, ROUGE2_f = 0.6667, ROUGEL_f = 0.8000
+-----------------------------------------
+
+[ID=244] requirement: 飞机飞行至五边航线的第四边时，若离到点距离小于 1500m，则放襟翼 15°。
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> Concat BERT similarity = 0.9489, ROUGE1_f = 0.8571, ROUGE2_f = 0.8333, ROUGEL_f = 0.8571
+-----------------------------------------
+
+[ID=245] requirement: 飞至第五边时，当距离预定着陆点的距离小于 Hw / tgλ + 1020 m 且大于 Hw / tgλ + 20 m 时放襟翼 40°。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 0.7500, f1 = 0.7500
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.9567, ROUGE1_f = 0.5405, ROUGE2_f = 0.5143, ROUGEL_f = 0.5405
+-----------------------------------------
+
+[ID=246] requirement: 如果飞机没有进入下滑窗口，则飞机再次定高后收襟翼至 15°（Vg相应变化）。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9431, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=247] requirement: 若飞机进入了下滑窗口则襟翼一直保持在 40°,直至完全着陆。
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 2, precision = 0.5000, recall = 0.6667, f1 = 0.5714
+  -> Concat BERT similarity = 0.9355, ROUGE1_f = 0.6667, ROUGE2_f = 0.5000, ROUGEL_f = 0.6667
+-----------------------------------------
+
+[ID=248] requirement: 在正向着陆时，系统在 A 点开始放襟翼 15°,  在 B 点放襟翼 40°；在逆向着陆时，系统在 C 点开始放襟翼 15°,  在 D 点放襟翼 40°。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.9273, ROUGE1_f = 0.8000, ROUGE2_f = 0.0000, ROUGEL_f = 0.6000
+-----------------------------------------
+
+[ID=249] requirement: 遥控控制模式下，系统收到遥控发来的“襟翼位置 0”控制指令时，发出襟翼 0°控制信号；收到“襟翼位置 1”控制指令时，发出襟翼 15°控制信号；收到“襟翼位置 2”控制指令时，发出襟翼 40°控制信号。
+  -> ref_count = 5, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 0.8000, f1 = 0.8889
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2000, f1 = 0.2222
+  -> Concat BERT similarity = 0.9409, ROUGE1_f = 1.0000, ROUGE2_f = 0.2000, ROUGEL_f = 0.6667
+-----------------------------------------
+
+[ID=250] requirement: 起落架的收起控制通过收起落架信号发出控制，通过收起锁死信号检查是否收起。起落架的放下控制通过放起落架信号发出控制，通过放下锁死信号检查是否放下。放下不成功时可通过应急放信号起动应急泵。
+  -> ref_count = 4, model_count = 6
+  -> BERT matched_pairs = 4, precision = 0.6667, recall = 1.0000, f1 = 0.8000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9625, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=251] requirement: 自主控制、人工修正和遥控模式时都可实现起落架的收放控制。自主控制或人工修正时飞控系统根据飞机的位置、运动等信息自动收放起落架，遥控时，地面控制站可随时发出指令收放起落架。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9447, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=252] requirement: 当飞机起飞到达爬升 1 阶段且起落架处于放下状态时，系统应将收起落架信号置为高电平，同时发左右刹车信号（刹车压力为 50％FS）。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.4000, recall = 0.4000, f1 = 0.4000
+  -> Concat BERT similarity = 0.9497, ROUGE1_f = 0.5000, ROUGE2_f = 0.4286, ROUGEL_f = 0.5000
+-----------------------------------------
+
+[ID=253] requirement: 1s 后系统应检查收起锁死信号，若收起锁死信号为低电平，则继续检查起落架收放状态。
+  -> ref_count = 4, model_count = 5
+  -> BERT matched_pairs = 4, precision = 0.8000, recall = 1.0000, f1 = 0.8889
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9590, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=254] requirement: 若起落架处于放下状态，系统应将收起落架信号置为低电平、左右刹车信号置为 0，并置起落架收故障标志。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2000, recall = 0.2000, f1 = 0.2000
+  -> Concat BERT similarity = 0.9476, ROUGE1_f = 1.0000, ROUGE2_f = 0.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=255] requirement: 若起落架处于收起状态，系统应将收起落架信号置为低电平、左右刹车信号置为 0。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9761, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=256] requirement: 若收起锁死信号为高电平，系统应周期性检查收起锁死信号。
+  -> ref_count = 3, model_count = 3
+  -> BERT matched_pairs = 3, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9841, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=257] requirement: 若 1 分钟内收起锁死信号变为低电平，系统应将收起落架信号置为低电平，左右刹车信号置为 0，并置起落架状态为收起。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.9056, ROUGE1_f = 0.3333, ROUGE2_f = 0.0000, ROUGEL_f = 0.3333
+-----------------------------------------
+
+[ID=258] requirement: 若 1 分钟后收起锁死信号仍为高电平，系统应将收起落架信号置为低电平、左右刹车信号置为 0，并置起落架收故障标志。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.6000, recall = 0.6000, f1 = 0.6000
+  -> Concat BERT similarity = 0.9688, ROUGE1_f = 0.7500, ROUGE2_f = 0.6667, ROUGEL_f = 0.7500
+-----------------------------------------
+
+[ID=259] requirement: 当飞机返场飞行至五边航线的第三边，离到点的距离小于 5000m 时，系统应将左右刹车置为 100％，放起落架信号置为高电平。
+  -> ref_count = 3, model_count = 5
+  -> BERT matched_pairs = 3, precision = 0.6000, recall = 1.0000, f1 = 0.7500
+  -> ROUGE matched_pairs = 2, precision = 0.4000, recall = 0.6667, f1 = 0.5000
+  -> Concat BERT similarity = 0.9285, ROUGE1_f = 0.5455, ROUGE2_f = 0.2222, ROUGEL_f = 0.5455
+-----------------------------------------
+
+[ID=260] requirement: 1s 后系统应检查放下锁死信号。
+  -> ref_count = 3, model_count = 3
+  -> BERT matched_pairs = 3, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.3333, recall = 0.3333, f1 = 0.3333
+  -> Concat BERT similarity = 0.9670, ROUGE1_f = 0.6667, ROUGE2_f = 0.0000, ROUGEL_f = 0.6667
+-----------------------------------------
+
+[ID=261] requirement: 若放下锁死信号为低电平，表示放起落架电路故障，再将应急放起落架信号置为高电平，1分钟后，将放起落架和应急放起落架信号均置为低电平（这种情况无法检查放下锁死信号），并将左右刹车置为相应的预置量，起落架放故障标志置为有效。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.5000, recall = 0.5000, f1 = 0.5000
+  -> Concat BERT similarity = 0.9704, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=262] requirement: 若放下锁死信号为高电平，则周期性检查放下锁死信号：若1分钟内放下锁死信号变为低电平，表示起落架已放下，将放起落架信号置为低电平，置起落架状态为放下，并将左右刹车置为相应的预置量，起落架放故障标志置为无效。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2000, recall = 0.2000, f1 = 0.2000
+  -> Concat BERT similarity = 0.9205, ROUGE1_f = 1.0000, ROUGE2_f = 0.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=263] requirement: 若放下锁死信号为高电平，则周期性检查放下锁死信号：若1分钟后放下锁死信号仍为高电平，表示放起落架故障，再将应急放起落架信号置为高电平，1s后周期性检查放下锁死信号。
+  -> ref_count = 4, model_count = 5
+  -> BERT matched_pairs = 4, precision = 0.8000, recall = 1.0000, f1 = 0.8889
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9859, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=264] requirement: 若1分钟后放下锁死信号仍为高电平，表示应急放起落架失败，将放起落架和应急放起落架信号均置为低电平，并将左右刹车置为相应的预置量，起落架放故障标志置为有效。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.4000, recall = 0.4000, f1 = 0.4000
+  -> Concat BERT similarity = 0.9163, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=265] requirement: 若1分钟内放下锁死信号为变低电平，表示起落架应急放成功，延时2s后，将放起落架和应急放起落架信号均置为低电平，置起落架状态为放下，并将左右刹车置为相应的预置量，起落架放故障标志置为无效。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.4000, recall = 0.4000, f1 = 0.4000
+  -> Concat BERT similarity = 0.9402, ROUGE1_f = 0.8000, ROUGE2_f = 0.6667, ROUGEL_f = 0.8000
+-----------------------------------------
+
+[ID=266] requirement: 地面加电时，系统应初始化所有信号和状态，确保起落架和刹车系统的初始状态正确。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.9868, ROUGE1_f = 1.0000, ROUGE2_f = 0.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=267] requirement: 根据需要可在任何控制模式下发遥控指令收放起落架。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9633, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=268] requirement: 收到“收起落架”遥控指令时，若飞行阶段不为地面等待且飞行高度不低于 80m，则按照 3.2.11.3 中 1）的处理（不包含其条件）进行。
+  -> ref_count = 4, model_count = 5
+  -> BERT matched_pairs = 3, precision = 0.6000, recall = 0.7500, f1 = 0.6667
+  -> ROUGE matched_pairs = 1, precision = 0.2000, recall = 0.2500, f1 = 0.2222
+  -> Concat BERT similarity = 0.9562, ROUGE1_f = 0.6667, ROUGE2_f = 0.0000, ROUGEL_f = 0.6667
+-----------------------------------------
+
+[ID=269] requirement: 收到“放起落架”的遥控指令时，按照 3.2.11.3 中 2）的处理（不包含其条件）进行。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9118, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=270] requirement: 飞机两后轮各有一套独立的刹车系统，刹车采用 PWM 控制方案。飞控计算机向刹车系统发送 2kHz 的脉宽调制信号，刹车力矩与脉宽调制信号的占空比成正比。刹车持续时间对应 PWM 信号的持续时间。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 2, precision = 0.5000, recall = 0.5000, f1 = 0.5000
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.9381, ROUGE1_f = 0.5714, ROUGE2_f = 0.4000, ROUGEL_f = 0.5714
+-----------------------------------------
+
+[ID=271] requirement: 若起落架全压缩信号有效，空速小于某一速度阈值vk_may_brake时，则采用差动刹车纠偏。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.4000, recall = 0.4000, f1 = 0.4000
+  -> Concat BERT similarity = 0.9685, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=272] requirement: 在自主控制模式下，差动刹车控制律为：δb = -(Kz * Dz + Kz * Dz - K * Δy - Ky * wy)
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 2, precision = 0.5000, recall = 0.6667, f1 = 0.5714
+  -> Concat BERT similarity = 0.9228, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=273] requirement: 在人工修正模式下，差动刹车控制律为：δb = -[Kz * (Dz - DzgSemi - DzsemiOld) + Kz * Dz - K * Δy - Ky * wy]，其中DzsemiOld为拉平段的侧偏距修正量。
+  -> ref_count = 4, model_count = 5
+  -> BERT matched_pairs = 4, precision = 0.8000, recall = 1.0000, f1 = 0.8889
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9238, ROUGE1_f = 0.2353, ROUGE2_f = 0.0000, ROUGEL_f = 0.2353
+-----------------------------------------
+
+[ID=274] requirement: 在带内回路遥控（姿态遥控）模式下，差动刹车控制律为：δb = K * (-yg) + Ky * wy
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.5000, recall = 0.5000, f1 = 0.5000
+  -> Concat BERT similarity = 0.9553, ROUGE1_f = 0.8148, ROUGE2_f = 0.8000, ROUGEL_f = 0.8148
+-----------------------------------------
+
+[ID=275] requirement: 在不带内回路遥控（舵面遥控）模式下，差动刹车控制律的具体公式未提供，但需要实现相应的控制逻辑。
+  -> ref_count = 4, model_count = 5
+  -> BERT matched_pairs = 4, precision = 0.8000, recall = 1.0000, f1 = 0.8889
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9419, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=276] requirement: 在地面等待阶段，自主和人工修正模式下的差动刹车控制律为：δb = 0。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.4000, recall = 0.4000, f1 = 0.4000
+  -> Concat BERT similarity = 0.9802, ROUGE1_f = 0.8000, ROUGE2_f = 0.7500, ROUGEL_f = 0.8000
+-----------------------------------------
+
+[ID=277] requirement: 遥控模式下与滑跑阶段相同，其中，vk_may_brake = 80km/h。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 0.7500, f1 = 0.7500
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.8743, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=278] requirement: 若起落架全压缩信号有效，空速不小于vk_may_brake时，δb = 0。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9748, ROUGE1_f = 0.7879, ROUGE2_f = 0.7097, ROUGEL_f = 0.7879
+-----------------------------------------
+
+[ID=279] requirement: δb 限幅在[ -XfB ，XfB ]。XfB 为最大比例刹车量，可通过遥控设置，缺省值 40％。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 4, precision = 0.8000, recall = 0.8000, f1 = 0.8000
+  -> ROUGE matched_pairs = 3, precision = 0.6000, recall = 0.6000, f1 = 0.6000
+  -> Concat BERT similarity = 0.9174, ROUGE1_f = 0.6452, ROUGE2_f = 0.4828, ROUGEL_f = 0.6452
+-----------------------------------------
+
+[ID=280] requirement: 若δb < 0，则δbL = -δb + YzBL + YjB，δbR = YzBL + YjB；否则δbL = YzBL + YjB，δbR = δb + YzBR + YjB。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.4000, recall = 0.4000, f1 = 0.4000
+  -> Concat BERT similarity = 0.8710, ROUGE1_f = 0.5000, ROUGE2_f = 0.3333, ROUGEL_f = 0.4000
+-----------------------------------------
+
+[ID=281] requirement: YzBL 和 YzBR 分别为左、右刹车预置量，可以通过遥控设置，缺省值为 10%。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9729, ROUGE1_f = 0.9091, ROUGE2_f = 0.9000, ROUGEL_f = 0.9091
+-----------------------------------------
+
+[ID=282] requirement: YjB 为应急刹车偏置量，正常情况为 0，链路中断时为 30%。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9727, ROUGE1_f = 0.8889, ROUGE2_f = 0.7500, ROUGEL_f = 0.8889
+-----------------------------------------
+
+[ID=283] requirement: 当按 a）进行解算后得出的max(δbL ,δbR ) ≤1。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9715, ROUGE1_f = 0.9744, ROUGE2_f = 0.9189, ROUGEL_f = 0.9744
+-----------------------------------------
+
+[ID=284] requirement: 具体的软化时间应该根据控制要求、实际需要和以往的控制经验来确定。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9776, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=285] requirement: 地面等待阶段的转入和转出通过开关指令三选二提高可靠性。
+  -> ref_count = 2, model_count = 4
+  -> BERT matched_pairs = 2, precision = 0.5000, recall = 1.0000, f1 = 0.6667
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9223, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=286] requirement: 其他阶段的转换条件应根据具体情况进行多次判断，当连续5次判断的结果一致时才进行阶段转换，以降低误判的概率。
+  -> ref_count = 2, model_count = 4
+  -> BERT matched_pairs = 2, precision = 0.5000, recall = 1.0000, f1 = 0.6667
+  -> ROUGE matched_pairs = 2, precision = 0.5000, recall = 1.0000, f1 = 0.6667
+  -> Concat BERT similarity = 0.9349, ROUGE1_f = 0.6667, ROUGE2_f = 0.5000, ROUGEL_f = 0.6667
+-----------------------------------------
+
+[ID=287] requirement: 飞控计算机地面加电或飞机完全着陆发出飞控预关机指令后，进入地面等待阶段。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.8862, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=288] requirement: 在地面滑跑（含起飞滑跑和着陆滑跑）阶段，接收到遥控发来的地面等待指令后，转入地面等待阶段。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9632, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=289] requirement: 当 max(δbL, δbR) > 100% 时，若 δbL ≥ δbR，则取 δbR = δbR - (δbL - 100)，δbL = 100%；若 δbR > δbL，则取 δbL = δbL - (δbR - 100)，δbR = 100%。从而保证左右刹车满足差动量的要求。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9293, ROUGE1_f = 0.5714, ROUGE2_f = 0.4615, ROUGEL_f = 0.5000
+-----------------------------------------
+
+[ID=290] requirement: 遥控发的刹车指令具有最高的优先级。不管处于何种控制模式，当收到“刹车”指令时，飞机将全刹车量分别叠加在左右刹车控制量上，再进行超限处理，该全刹车量可遥控装订，缺省值为 80%。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.9750, ROUGE1_f = 1.0000, ROUGE2_f = 0.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=291] requirement: 当收到“松刹车”指令时，按照解算出的左右刹车量进行刹车（即不再叠加全刹车量），此时，若解算出的刹车量 δb 为 0，则左右刹车均取相应的刹车预置量。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.6000, recall = 0.6000, f1 = 0.6000
+  -> Concat BERT similarity = 0.9668, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=292] requirement: 当收到车指令或松刹车指令时，左右刹车控制量分别取左右地检刹车量。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9681, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=293] requirement: 当收到飞控预关机指令后，将左右刹车控制量取为 0，即清除左右刹车预置量。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.4000, recall = 0.4000, f1 = 0.4000
+  -> Concat BERT similarity = 0.9620, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=294] requirement: 刹车指令的处理仅在地面等待、起飞滑跑、着陆滑跑段时进行。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9621, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=295] requirement: 收起落架时左右刹车量均置为 50％，放起落架时左右刹车量均置为 100％；收起落架结束时左右刹车量均置为 0％，放起落架结束时左右刹车量均置为预置量。
+  -> ref_count = 4, model_count = 5
+  -> BERT matched_pairs = 4, precision = 0.8000, recall = 1.0000, f1 = 0.8889
+  -> ROUGE matched_pairs = 1, precision = 0.2000, recall = 0.2500, f1 = 0.2222
+  -> Concat BERT similarity = 0.9390, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=296] requirement: 飞机返航着陆时，如果不满足安全着陆的条件而继续着陆，有可能影响着陆的安全。为了提高飞机着陆安全性，提供了复飞功能，使飞机能够调整飞行状态重新着陆。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9389, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=297] requirement: 飞机以自主或人工修正模式进入下滑后，若转入了遥控操纵，当飞行高度高于决断高度（40m）时，若再次转入自主控制模式，则飞机自动复飞，并采用遥控转自主的软化方式。
+  -> ref_count = 6, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 0.8333, f1 = 0.9091
+  -> ROUGE matched_pairs = 2, precision = 0.4000, recall = 0.3333, f1 = 0.3636
+  -> Concat BERT similarity = 0.9116, ROUGE1_f = 0.6667, ROUGE2_f = 0.5000, ROUGEL_f = 0.6667
+-----------------------------------------
+
+[ID=298] requirement: 当下述条件 1）和 2）同时满足时，执行指令复飞：
+1） 飞行高度高于决断高度（40m），若控制模式不为遥控，还应满足已进入下滑。
+2） 收到飞行开关指令：“复飞”。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.4000, recall = 0.4000, f1 = 0.4000
+  -> Concat BERT similarity = 0.8944, ROUGE1_f = 0.5714, ROUGE2_f = 0.0000, ROUGEL_f = 0.5714
+-----------------------------------------
+
+[ID=299] requirement: 若飞机处于自主控制模式，则直接控制飞机进行复飞，若飞机不处于自主控制模式，则自动转入自主控制模式，再控制飞机进行复飞，软化方式与模式转换的软化方式相同。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9642, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=300] requirement: 将节风门推至 100％位置，飞行阶段转为爬升 2 段，纵向控制飞机向五边航线高度爬升，侧向控制飞机从当前点切入五边航线。到达五边高度定高后飞机将退出复飞状态，置襟翼为 15°。随后再次进入五边航线，重新着陆。
+  -> ref_count = 4, model_count = 9
+  -> BERT matched_pairs = 4, precision = 0.4444, recall = 1.0000, f1 = 0.6154
+  -> ROUGE matched_pairs = 4, precision = 0.4444, recall = 1.0000, f1 = 0.6154
+  -> Concat BERT similarity = 0.9623, ROUGE1_f = 0.4000, ROUGE2_f = 0.2609, ROUGEL_f = 0.4000
+-----------------------------------------
+
+[ID=301] requirement: 复飞过程中不允许设置起点，允许改变着陆方向。
+  -> ref_count = 1, model_count = 4
+  -> BERT matched_pairs = 1, precision = 0.2500, recall = 1.0000, f1 = 0.4000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.8901, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=302] requirement: 自主或人工修正控制模式下，飞机定高飞行或在下滑 1 段飞行时，若空速连续三次判断均小于一定值（具体数值参见附录）或俯仰角连续三次判断均大于 10 度，则认为飞机进入失速状态。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.9534, ROUGE1_f = 0.5000, ROUGE2_f = 0.0000, ROUGEL_f = 0.5000
+-----------------------------------------
+
+[ID=303] requirement: 转入爬升 2 段，升降舵空速控制，推节风门至 100％，若飞机已进入下滑 1 而失速，则进入复飞控制。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 1, precision = 0.2000, recall = 0.2000, f1 = 0.2000
+  -> Concat BERT similarity = 0.9153, ROUGE1_f = 0.3333, ROUGE2_f = 0.2500, ROUGEL_f = 0.3333
+-----------------------------------------
+
+[ID=304] requirement: 当连续五次判断空速增加至大于给定速度时，飞机退出失速状态，根据当时的高度偏差判断转入哪一阶段（爬升 2 段或定高段），继续飞行。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.4000, recall = 0.4000, f1 = 0.4000
+  -> Concat BERT similarity = 0.8349, ROUGE1_f = 0.5714, ROUGE2_f = 0.4000, ROUGEL_f = 0.5714
+-----------------------------------------
+
+[ID=305] requirement: 控制律计算出的舵偏角指令在输出到舵机之前，副翼偏角指令还需要进行舵偏指令的分配。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9739, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=306] requirement: 副翼舵面上偏和副翼下偏的效率不一样，上偏效率低，下偏效率高，进行舵偏指令分配，通过分配系数的不同，达到使控制效果相同的目的。
+  -> ref_count = 2, model_count = 4
+  -> BERT matched_pairs = 2, precision = 0.5000, recall = 1.0000, f1 = 0.6667
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9330, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=307] requirement: 若副翼偏角指令δx >0，则左副翼偏角指令δxL ＝ k1 δx ，右副翼偏角指令 δxR ＝ k2
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.7500, recall = 0.7500, f1 = 0.7500
+  -> Concat BERT similarity = 0.8655, ROUGE1_f = 0.8276, ROUGE2_f = 0.6667, ROUGEL_f = 0.8276
+-----------------------------------------
+
+[ID=308] requirement: 若副翼偏角指令δx <0，则左副翼偏角指令δxL ＝ k2  δx ，右副翼偏角指令 δxR ＝ k1 δx，其中，k1 为上偏分配系数，k2 为下偏分配系数。
+  -> ref_count = 4, model_count = 5
+  -> BERT matched_pairs = 4, precision = 0.8000, recall = 1.0000, f1 = 0.8889
+  -> ROUGE matched_pairs = 3, precision = 0.6000, recall = 0.7500, f1 = 0.6667
+  -> Concat BERT similarity = 0.7929, ROUGE1_f = 0.9697, ROUGE2_f = 0.9677, ROUGEL_f = 0.9697
+-----------------------------------------
+
+[ID=309] requirement: 飞行控制与管理软件应能够根据给定的飞行重量、海拔高度和飞行真空速，计算出失速速度。
+  -> ref_count = 3, model_count = 5
+  -> BERT matched_pairs = 3, precision = 0.6000, recall = 1.0000, f1 = 0.7500
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.8845, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=310] requirement: 飞行控制与管理软件应支持不同襟翼角度下的失速速度计算，特别是襟翼为 40°时的失速速度计算。
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> Concat BERT similarity = 0.7804, ROUGE1_f = 0.8571, ROUGE2_f = 0.8000, ROUGEL_f = 0.8571
+-----------------------------------------
+
+[ID=311] requirement: 地面等待阶段在五边航线和机场气压高度已装订且收到起飞指令后转入起飞地面段（起飞滑跑段）。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9862, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=312] requirement: 在起飞滑跑段，当空速大于 30m/s 且高度大于 15m 时转入起飞离地段，软化时限设为 2s。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 0.7500, f1 = 0.7500
+  -> ROUGE matched_pairs = 2, precision = 0.5000, recall = 0.5000, f1 = 0.5000
+  -> Concat BERT similarity = 0.9271, ROUGE1_f = 0.7273, ROUGE2_f = 0.7000, ROUGEL_f = 0.7273
+-----------------------------------------
+
+[ID=313] requirement: 在起飞离地段，当飞行高度大于安全高度 80m 时转入爬升 1 段，升降舵通道采用设置积分器初值软化的方法，其它通道不需软化。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.7500, recall = 0.7500, f1 = 0.7500
+  -> Concat BERT similarity = 0.8969, ROUGE1_f = 0.7500, ROUGE2_f = 0.3333, ROUGEL_f = 0.7500
+-----------------------------------------
+
+[ID=314] requirement: 在爬升 1 段，开始收起落架，若起落架收起，则延时 5s 开始收襟翼；若 1 分钟后起落架仍未收起，则直接收襟翼为 0 度。若襟翼收到 0 度，则延时 5s 后转入爬升 2 段；若进入爬升 1 后超过 75s 时限襟翼仍未收到 0 度，则直接转入爬升 2 段。转入爬升 2 段时软化时限为 2s。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9641, ROUGE1_f = 0.8800, ROUGE2_f = 0.6087, ROUGEL_f = 0.8000
+-----------------------------------------
+
+[ID=315] requirement: 在爬升 2 段，若飞机未失速，根据当前高度与期望高度之差 DH 的值进行相应处理：1）当 DH>10m，则转入下降段，软化时限设为 2s，升降舵通道采用设置积分器初值软化的方法进行软化。2）当 －10m≤DH≤10m，则转入定高段，软化时限设为 2s。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9699, ROUGE1_f = 0.9143, ROUGE2_f = 0.7879, ROUGEL_f = 0.9143
+-----------------------------------------
+
+[ID=316] requirement: 设置定高控制积分器、高度跟踪积分器以及节风门控制积分器的初值（按节风门位置为 100%计算节风门控制积分器的初值）进行软化，为定高控制和高度跟踪控制做准备。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9451, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=317] requirement: 若处于五边航线飞行的第五边，且进入了下滑窗口，则转入下滑 1 段；否则，根据当前高度与期望高度之差 DH 的值进行相应处理。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 3, precision = 0.6000, recall = 0.6000, f1 = 0.6000
+  -> Concat BERT similarity = 0.9572, ROUGE1_f = 0.7500, ROUGE2_f = 0.6667, ROUGEL_f = 0.7500
+-----------------------------------------
+
+[ID=318] requirement: 当 DH > 50m，转入下降段，软化时限设为 2s，升降舵通道采用设置积分器初值软化的方法进行软化。
+  -> ref_count = 2, model_count = 4
+  -> BERT matched_pairs = 2, precision = 0.5000, recall = 1.0000, f1 = 0.6667
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.5000, f1 = 0.3333
+  -> Concat BERT similarity = 0.9343, ROUGE1_f = 0.5455, ROUGE2_f = 0.4444, ROUGEL_f = 0.5455
+-----------------------------------------
+
+[ID=319] requirement: 当 DH < -50m，转入爬升 2 段，软化时限设为 2s，升降舵通道采用设置积分器初值软化的方法进行软化。
+  -> ref_count = 3, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 1.0000, f1 = 0.8571
+  -> ROUGE matched_pairs = 2, precision = 0.5000, recall = 0.6667, f1 = 0.5714
+  -> Concat BERT similarity = 0.9054, ROUGE1_f = 0.6667, ROUGE2_f = 0.5263, ROUGEL_f = 0.6667
+-----------------------------------------
+
+[ID=320] requirement: 当一般标志侧向控制标志由其他方式更改为五边飞行时，设置高度跟踪积分器的初值进行软化；当一般标志侧向控制标志由五边飞行更改为其他方式时，设置定高控制积分器的初值进行软化。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9121, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=321] requirement: 根据当前高度与期望高度之差 DH 的值进行相应处理：若 -10m ≤ DH ≤ 10m，则转入定高段，软化时限设为 2s，并设置定高控制积分器、高度跟踪积分器以及节风门控制积分器的初值进行软化，为定高控制和高度跟踪控制做准备。
+  -> ref_count = 5, model_count = 6
+  -> BERT matched_pairs = 5, precision = 0.8333, recall = 1.0000, f1 = 0.9091
+  -> ROUGE matched_pairs = 5, precision = 0.8333, recall = 1.0000, f1 = 0.9091
+  -> Concat BERT similarity = 0.9254, ROUGE1_f = 0.9000, ROUGE2_f = 0.8421, ROUGEL_f = 0.9000
+-----------------------------------------
+
+[ID=322] requirement: 当 DH < -10m，则转入下降段。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9234, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=323] requirement: 入爬升 2 段，软化时限设为 2s，升降舵通道采用设置积分器初值软化的方法进行软化。
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9536, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=324] requirement: 在下滑 1 段，当飞行高度低于 100m 时，转入下滑 2 段，并将定直侧滑控制积分器和航向控制保持积分器清零，为下滑 2 段的飞行控制做准备，软化时限设为 2s。
+  -> ref_count = 5, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 0.8000, f1 = 0.8889
+  -> ROUGE matched_pairs = 2, precision = 0.5000, recall = 0.4000, f1 = 0.4444
+  -> Concat BERT similarity = 0.9594, ROUGE1_f = 0.7273, ROUGE2_f = 0.6000, ROUGEL_f = 0.7273
+-----------------------------------------
+
+[ID=325] requirement: 在下滑 2 段，当飞行高度低于 17m 时，转入拉平段，升降舵通道采用设置积分器初值软化的方法，其它通道不需软化。
+  -> ref_count = 2, model_count = 4
+  -> BERT matched_pairs = 2, precision = 0.5000, recall = 1.0000, f1 = 0.6667
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.5000, f1 = 0.3333
+  -> Concat BERT similarity = 0.9004, ROUGE1_f = 0.5000, ROUGE2_f = 0.0000, ROUGEL_f = 0.5000
+-----------------------------------------
+
+[ID=326] requirement: 在拉平段，当飞行高度低于 1.5m 时，转入滚转改平段，各通道不进行软化。
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 3, precision = 0.7500, recall = 0.7500, f1 = 0.7500
+  -> ROUGE matched_pairs = 1, precision = 0.2500, recall = 0.2500, f1 = 0.2500
+  -> Concat BERT similarity = 0.9430, ROUGE1_f = 0.4000, ROUGE2_f = 0.2500, ROUGEL_f = 0.4000
+-----------------------------------------
+
+[ID=327] requirement: 在滚转改平段，当以下条件之一满足时，转入着陆滑跑段，软化时限设为 2s。
+1） 起落架全压缩信号连续 12 拍为真；
+2） 遥控接地信号为真；
+3） 累计 75 拍遥控信号状态为不正常。 注意，该项条件只需判断一次。
+  -> ref_count = 5, model_count = 7
+  -> BERT matched_pairs = 5, precision = 0.7143, recall = 1.0000, f1 = 0.8333
+  -> ROUGE matched_pairs = 2, precision = 0.2857, recall = 0.4000, f1 = 0.3333
+  -> Concat BERT similarity = 0.8571, ROUGE1_f = 0.4444, ROUGE2_f = 0.0000, ROUGEL_f = 0.4444
+-----------------------------------------
+
+[ID=328] requirement: 在着陆滑跑段，当飞控预关机指令有效后，转入地面等待阶段。
+  -> ref_count = 3, model_count = 3
+  -> BERT matched_pairs = 3, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9817, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=329] requirement: 若发动机空中停车，则飞机进入飘落阶段。
+  -> ref_count = 2, model_count = 4
+  -> BERT matched_pairs = 2, precision = 0.5000, recall = 1.0000, f1 = 0.6667
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9453, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=330] requirement: 当 DH<－10m，转入爬升 2段，设置空速控制积分器的初值进行软化
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9249, ROUGE1_f = 1.0000, ROUGE2_f = 0.8571, ROUGEL_f = 0.8750
+-----------------------------------------
+
+[ID=331] requirement: 当－10m <DH<10m，转入定高段，设置定高控制积分器、高度跟踪积分器的初值进行软化
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 2, precision = 0.5000, recall = 0.5000, f1 = 0.5000
+  -> Concat BERT similarity = 0.9492, ROUGE1_f = 0.6667, ROUGE2_f = 0.6250, ROUGEL_f = 0.6667
+-----------------------------------------
+
+[ID=332] requirement: 以上阶段转换软化时限设为 2s
+  -> ref_count = 4, model_count = 3
+  -> BERT matched_pairs = 3, precision = 1.0000, recall = 0.7500, f1 = 0.8571
+  -> ROUGE matched_pairs = 1, precision = 0.3333, recall = 0.2500, f1 = 0.2857
+  -> Concat BERT similarity = 0.9560, ROUGE1_f = 0.2500, ROUGE2_f = 0.0000, ROUGEL_f = 0.2500
+-----------------------------------------
+
+[ID=333] requirement: 执行起飞指令时，转入起飞滑跑段
+  -> ref_count = 2, model_count = 4
+  -> BERT matched_pairs = 2, precision = 0.5000, recall = 1.0000, f1 = 0.6667
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9339, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=334] requirement: 在起飞滑跑段，当空速>30m/s 且高度大于 15m 时转入起飞离地段，不做软化处理
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9059, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=335] requirement: 当飞行高度大于安全高度 80m 时，转入爬升 1 段，不做软化处理
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9116, ROUGE1_f = 0.8750, ROUGE2_f = 0.7143, ROUGEL_f = 0.8750
+-----------------------------------------
+
+[ID=336] requirement: 当起落架全压缩信号为真或遥控接地信号为真时，转入着陆滑跑段，不做软化处理
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9607, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=337] requirement: d 项只需判断一次，其他项阶段转换必须连续 5 次满足相应条件时才进行
+  -> ref_count = 5, model_count = 5
+  -> BERT matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 5, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9542, ROUGE1_f = 1.0000, ROUGE2_f = 1.0000, ROUGEL_f = 1.0000
+-----------------------------------------
+
+[ID=338] requirement: 若阶段标志为“飘落”则不进行阶段转换
+  -> ref_count = 2, model_count = 2
+  -> BERT matched_pairs = 2, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 0, precision = 0.0000, recall = 0.0000, f1 = 0.0000
+  -> Concat BERT similarity = 0.9649, ROUGE1_f = 0.0000, ROUGE2_f = 0.0000, ROUGEL_f = 0.0000
+-----------------------------------------
+
+[ID=339] requirement: 若复飞标志 3 选 2 结果为真，则飞机阶段转为爬升 2 段，并将空速控制积分器清零
+  -> ref_count = 4, model_count = 4
+  -> BERT matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> ROUGE matched_pairs = 4, precision = 1.0000, recall = 1.0000, f1 = 1.0000
+  -> Concat BERT similarity = 0.9470, ROUGE1_f = 0.9091, ROUGE2_f = 0.9000, ROUGEL_f = 0.9091
+-----------------------------------------
+
