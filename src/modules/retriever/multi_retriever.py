@@ -1,25 +1,27 @@
-import sys
-sys.path.append("src")
 from modules.retriever.bm25 import BM25
 from modules.retriever.hnsw import HNSW
 from modules.retriever.rerank import Reranker
+from config import RETRIEVAL_CONFIG
 
 class MultiRetriever:
     """多路检索器，集成BM25、向量检索和重排序功能"""
     
-    def __init__(self, file_path, use_rerank=True):
+    def __init__(self, file_path, use_rerank=None):
         """
         初始化多路检索器
         
         :param file_path: 知识库文档路径
-        :param use_rerank: 是否使用重排序，默认True
+        :param use_rerank: 是否使用重排序，默认使用配置文件设置
         """
+        if use_rerank is None:
+            use_rerank = RETRIEVAL_CONFIG["use_rerank"]
+            
         self.bm25 = BM25(file_path)
         self.hnsw = HNSW(file_path=file_path)
         self.reranker = Reranker() if use_rerank else None
         self.use_rerank = use_rerank
 
-    def retrieve(self, query: str, k_retrieval: int = 20, k_final: int = 5) -> list[str]:
+    def retrieve(self, query: str, k_retrieval: int = None, k_final: int = None) -> list[str]:
         """
         执行多路检索
         
@@ -28,6 +30,11 @@ class MultiRetriever:
         :param k_final: 最终返回的结果数量
         :return: 检索结果列表
         """
+        if k_retrieval is None:
+            k_retrieval = RETRIEVAL_CONFIG["k_retrieval"]
+        if k_final is None:
+            k_final = RETRIEVAL_CONFIG["k_final"]
+        
         # 获取BM25检索结果
         bm25_results = self.bm25.get_topK(query, k=k_retrieval)
         
@@ -73,6 +80,7 @@ class MultiRetriever:
 
 if __name__ == "__main__":
     # 使用示例
-    retriever = MultiRetriever("datasets/table/安全性分析准则_书.json")
+    from config import get_data_path
+    retriever = MultiRetriever(get_data_path("knowledge_base"))
     results = retriever.retrieve("系统应能够根据当前飞行状态和目标状态计算出舵偏角δz、δx和δy")
     print(results) 

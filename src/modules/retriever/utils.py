@@ -15,7 +15,10 @@ def get_document_by_id(documents: List[dict], ids: List[int]) -> List[tuple]:
     results = []
     for doc_id in ids:
         if 0 <= doc_id < len(documents):
-            results.append((doc_id, documents[doc_id]["分析准则"]))
+            # 支持两种字段名：优先使用 safety_criterion，如果不存在则使用 分析准则
+            doc = documents[doc_id]
+            criterion_text = doc.get("safety_criterion", doc.get("分析准则", ""))
+            results.append((doc_id, criterion_text))
     return results
 
 def load_single_stopwords(file_path: str) -> Set[str]:

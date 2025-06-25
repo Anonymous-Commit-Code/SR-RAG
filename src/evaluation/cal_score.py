@@ -5,25 +5,35 @@ from sentence_transformers import SentenceTransformer, util
 from scipy.optimize import linear_sum_assignment
 from rouge_score import rouge_scorer
 import torch
+import sys
+sys.path.append(".")
+from config import EVALUATION_CONFIG
 
 def load_data_as_dict(json_file: str) -> Dict[Any, Dict[str, Any]]:
     """
     从给定 JSON 文件加载数据，并转换成 {id: {"requirement": str, "safety_requirements": [...]} } 的结构
     """
-    with open(json_file, 'r', encoding='utf-8') as f:
-        data_list = json.load(f)
-    data_dict = {}
-    for item in data_list:
-        data_dict[item["id"]] = {
-            "requirement": item["requirement"],
-            "safety_requirements": item.get("safety_requirements", [])
-        }
-    return data_dict
+    try:
+        with open(json_file, 'r', encoding='utf-8') as f:
+            data_list = json.load(f)
+        data_dict = {}
+        for item in data_list:
+            data_dict[item["id"]] = {
+                "requirement": item["requirement"],
+                "safety_requirements": item.get("safety_requirements", [])
+            }
+        return data_dict
+    except FileNotFoundError:
+        raise FileNotFoundError(f"文件未找到: {json_file}")
+    except json.JSONDecodeError as e:
+        raise ValueError(f"JSON格式错误: {e}")
+    except Exception as e:
+        raise Exception(f"加载数据时出错: {e}")
 
 def evaluate_concatenated_text(
     gt_json_path: str,
     model_json_path: str,
-    bert_model_name: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+    bert_model_name: str = None
 ):
     """
     针对每个需求（requirement），将其所有安全需求拼接成文本，
@@ -34,15 +44,26 @@ def evaluate_concatenated_text(
     :param bert_model_name: 用于BERT embedding的模型名称
     :return: 拼接文本评估结果
     """
+    if bert_model_name is None:
+        bert_model_name = EVALUATION_CONFIG["bert_model_name"]
+    
     # 1. 加载数据
     gt_data = load_data_as_dict(gt_json_path)
     model_data = load_data_as_dict(model_json_path)
     
     # 2. 初始化 BERT 模型 & ROUGE scorer
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # 确定设备
-    bert_model = SentenceTransformer(bert_model_name)
-    bert_model.to(device)  # 将模型移动到指定设备
-    rouge_scorer_obj = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=False)
+    try:
+        bert_model = SentenceTransformer(bert_model_name)
+        bert_model.to(device)  # 将模型移动到指定设备
+    except Exception as e:
+        print(f"加载BERT模型失败: {e}")
+        raise
+    
+    rouge_scorer_obj = rouge_scorer.RougeScorer(
+        EVALUATION_CONFIG["rouge_types"], 
+        use_stemmer=EVALUATION_CONFIG["use_stemmer"]
+    )
     
     # 找出两边都有的id
     common_ids = set(gt_data.keys()).intersection(set(model_data.keys()))
@@ -55,46 +76,51 @@ def evaluate_concatenated_text(
     all_rougeL_f = []
     
     for req_id in common_ids:
-        gt_item = gt_data[req_id]
-        model_item = model_data[req_id]
-        
-        ref_list = gt_item["safety_requirements"]
-        pred_list = model_item["safety_requirements"]
-        
-        # 如果任一方为空，则跳过
-        if not ref_list or not pred_list:
-            continue
+        try:
+            gt_item = gt_data[req_id]
+            model_item = model_data[req_id]
             
-        # 拼接文本 (用换行符连接各项)
-        ref_concat = "\n".join(ref_list)
-        pred_concat = "\n".join(pred_list)
-        
-        # 计算BERT相似度
-        ref_emb = bert_model.encode([ref_concat], convert_to_tensor=True, device=device)
-        pred_emb = bert_model.encode([pred_concat], convert_to_tensor=True, device=device)
-        bert_sim = float(util.cos_sim(ref_emb, pred_emb)[0][0].item())
-        
-        # 计算ROUGE分数
-        rouge_scores = rouge_scorer_obj.score(ref_concat, pred_concat)
-        rouge1_f = rouge_scores["rouge1"].fmeasure
-        rouge2_f = rouge_scores["rouge2"].fmeasure
-        rougeL_f = rouge_scores["rougeL"].fmeasure
-        
-        # 记录结果
-        concat_results.append({
-            "id": req_id,
-            "requirement": gt_item["requirement"],
-            "bert_similarity": bert_sim,
-            "rouge1_f": rouge1_f,
-            "rouge2_f": rouge2_f,
-            "rougeL_f": rougeL_f
-        })
-        
-        # 累加统计
-        all_bert_sim.append(bert_sim)
-        all_rouge1_f.append(rouge1_f)
-        all_rouge2_f.append(rouge2_f) 
-        all_rougeL_f.append(rougeL_f)
+            ref_list = gt_item["safety_requirements"]
+            pred_list = model_item["safety_requirements"]
+            
+            # 如果任一方为空，则跳过
+            if not ref_list or not pred_list:
+                continue
+                
+            # 拼接文本 (用换行符连接各项)
+            ref_concat = "\n".join(ref_list)
+            pred_concat = "\n".join(pred_list)
+            
+            # 计算BERT相似度
+            ref_emb = bert_model.encode([ref_concat], convert_to_tensor=True, device=device)
+            pred_emb = bert_model.encode([pred_concat], convert_to_tensor=True, device=device)
+            bert_sim = float(util.cos_sim(ref_emb, pred_emb)[0][0].item())
+            
+            # 计算ROUGE分数
+            rouge_scores = rouge_scorer_obj.score(ref_concat, pred_concat)
+            rouge1_f = rouge_scores["rouge1"].fmeasure
+            rouge2_f = rouge_scores["rouge2"].fmeasure
+            rougeL_f = rouge_scores["rougeL"].fmeasure
+            
+            # 记录结果
+            concat_results.append({
+                "id": req_id,
+                "requirement": gt_item["requirement"],
+                "bert_similarity": bert_sim,
+                "rouge1_f": rouge1_f,
+                "rouge2_f": rouge2_f,
+                "rougeL_f": rougeL_f
+            })
+            
+            # 累加统计
+            all_bert_sim.append(bert_sim)
+            all_rouge1_f.append(rouge1_f)
+            all_rouge2_f.append(rouge2_f) 
+            all_rougeL_f.append(rougeL_f)
+            
+        except Exception as e:
+            print(f"处理需求 {req_id} 时出错: {e}")
+            continue
     
     # 计算平均值
     avg_bert_sim = sum(all_bert_sim) / len(all_bert_sim) if all_bert_sim else 0.0
@@ -118,9 +144,9 @@ def evaluate_concatenated_text(
 def evaluate_two_files(
     gt_json_path: str,
     model_json_path: str,
-    bert_model_name: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
-    bert_threshold: float = 0.0,
-    rouge_threshold: float = 0.0
+    bert_model_name: str = None,
+    bert_threshold: float = None,
+    rouge_threshold: float = None
 ):
     """
     进行两套匹配并输出相应指标：
@@ -135,15 +161,31 @@ def evaluate_two_files(
     :param rouge_threshold: ROUGE阈值（这里默认对 ROUGE-L_f），低于此值的匹配对将被过滤掉
     :return: 结果字典
     """
+    # 使用配置文件的默认值
+    if bert_model_name is None:
+        bert_model_name = EVALUATION_CONFIG["bert_model_name"]
+    if bert_threshold is None:
+        bert_threshold = EVALUATION_CONFIG.get("bert_threshold", 0.7)
+    if rouge_threshold is None:
+        rouge_threshold = EVALUATION_CONFIG.get("rouge_threshold", 0.0)
+    
     # 1. 加载数据
     gt_data = load_data_as_dict(gt_json_path)
     model_data = load_data_as_dict(model_json_path)
 
     # 2. 初始化 BERT 模型 & ROUGE scorer
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # 确定设备
-    bert_model = SentenceTransformer(bert_model_name)
-    bert_model.to(device)  # 将模型移动到指定设备
-    rouge_scorer_obj = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=False)
+    try:
+        bert_model = SentenceTransformer(bert_model_name)
+        bert_model.to(device)  # 将模型移动到指定设备
+    except Exception as e:
+        print(f"加载BERT模型失败: {e}")
+        raise
+    
+    rouge_scorer_obj = rouge_scorer.RougeScorer(
+        EVALUATION_CONFIG["rouge_types"], 
+        use_stemmer=EVALUATION_CONFIG["use_stemmer"]
+    )
 
     # ============= 准备统计 (BERT) =============
     total_matched_bert = 0
@@ -168,127 +210,118 @@ def evaluate_two_files(
     details_list = []
 
     for req_id in common_ids:
-        gt_item = gt_data[req_id]
-        model_item = model_data[req_id]
+        try:
+            gt_item = gt_data[req_id]
+            model_item = model_data[req_id]
 
-        ref_list = gt_item["safety_requirements"]
-        pred_list = model_item["safety_requirements"]
+            ref_list = gt_item["safety_requirements"]
+            pred_list = model_item["safety_requirements"]
 
-        n = len(ref_list)
-        m = len(pred_list)
+            n = len(ref_list)
+            m = len(pred_list)
 
-        if n == 0 and m == 0:
+            if n == 0 and m == 0:
+                continue
+
+            # =====================================
+            #  Part 1: BERT-based Matching + 阈值过滤
+            # =====================================
+            ref_emb = bert_model.encode(ref_list, convert_to_tensor=True, device=device)
+            pred_emb = bert_model.encode(pred_list, convert_to_tensor=True, device=device)
+
+            sim_matrix = util.cos_sim(pred_emb, ref_emb).cpu().numpy()  # shape=(m,n)
+            cost_matrix = 1 - sim_matrix
+
+            # 匈牙利算法
+            row_ind, col_ind = linear_sum_assignment(cost_matrix)  # (pred_idx数组, ref_idx数组)
+            matched_pairs_bert = list(zip(row_ind, col_ind))
+
+            # 对BERT匹配对应用相似度阈值过滤
+            valid_pairs_bert = []
+            for (pi, ri) in matched_pairs_bert:
+                bert_sim = sim_matrix[pi, ri]
+                if bert_sim >= bert_threshold:
+                    valid_pairs_bert.append((pi, ri))
+                    bert_sim_sum_global += bert_sim
+                    bert_pair_count_global += 1
+
+            # 统计BERT匹配结果
+            total_matched_bert += len(valid_pairs_bert)
+            total_ref_bert += n
+            total_model_bert += m
+
+            # =====================================
+            #  Part 2: ROUGE-based Matching + 阈值过滤
+            #  - 这里示例用 ROUGE-L_f 作为匹配度
+            # =====================================
+            # 先计算所有 (pred, ref) 的 rouge_l_f
+            # 以 cost = 1 - rouge_l_f
+            m_rouge_matrix = np.zeros((m, n), dtype=np.float32)
+            for i in range(m):
+                for j in range(n):
+                    pred_text = pred_list[i]
+                    ref_text = ref_list[j]
+                    scores = rouge_scorer_obj.score(ref_text, pred_text)
+                    rouge_l_f = scores["rougeL"].fmeasure  # 也可换成 scores["rouge1"], ...
+                    m_rouge_matrix[i, j] = rouge_l_f
+
+            cost_matrix_rouge = 1 - m_rouge_matrix
+            row_ind_r, col_ind_r = linear_sum_assignment(cost_matrix_rouge)
+            matched_pairs_rouge = list(zip(row_ind_r, col_ind_r))
+
+            # 对ROUGE匹配对应用阈值过滤 (这里默认对 ROUGE-L_f)
+            valid_pairs_rouge = []
+            for (pi, ri) in matched_pairs_rouge:
+                r_l_f = m_rouge_matrix[pi, ri]  # 该pair的 rouge_l_f
+                if r_l_f >= rouge_threshold:
+                    valid_pairs_rouge.append((pi, ri, r_l_f))
+
+            k_rouge = len(valid_pairs_rouge)
+            total_matched_rouge += k_rouge
+            total_ref_rouge += n
+            total_model_rouge += m
+
+            # 同时统计 ROUGE1/2/L 的累加值（只对有效pair）
+            for (pi, ri, _) in valid_pairs_rouge:
+                pred_text = pred_list[pi]
+                ref_text = ref_list[ri]
+                full_scores = rouge_scorer_obj.score(ref_text, pred_text)
+                rouge1_sum_global += full_scores["rouge1"].fmeasure
+                rouge2_sum_global += full_scores["rouge2"].fmeasure
+                rougel_sum_global += full_scores["rougeL"].fmeasure
+
+            rouge_pair_count_global += k_rouge
+
+            # 计算本条需求的 P/R/F1 (ROUGE)
+            precision_rouge = k_rouge / m if m > 0 else 0.0
+            recall_rouge = k_rouge / n if n > 0 else 0.0
+            f1_rouge = (
+                2 * precision_rouge * recall_rouge / (precision_rouge + recall_rouge)
+                if (precision_rouge + recall_rouge) > 0
+                else 0.0
+            )
+
+            # （可选）记录详情
+            details_list.append({
+                "id": req_id,
+                "requirement": gt_item["requirement"],
+                "ref_count": n,
+                "model_count": m,
+                # -- BERT
+                "bert_matched_pairs": len(valid_pairs_bert),
+                "bert_precision": len(valid_pairs_bert) / m if m > 0 else 0.0,
+                "bert_recall": len(valid_pairs_bert) / n if n > 0 else 0.0,
+                "bert_f1": 2 * (len(valid_pairs_bert) / m) * (len(valid_pairs_bert) / n) / ((len(valid_pairs_bert) / m) + (len(valid_pairs_bert) / n)) if ((len(valid_pairs_bert) / m) + (len(valid_pairs_bert) / n)) > 0 else 0.0,
+                # -- ROUGE
+                "rouge_matched_pairs": k_rouge,
+                "rouge_precision": precision_rouge,
+                "rouge_recall": recall_rouge,
+                "rouge_f1": f1_rouge
+            })
+
+        except Exception as e:
+            print(f"处理需求 {req_id} 时出错: {e}")
             continue
-
-        # =====================================
-        #  Part 1: BERT-based Matching + 阈值过滤
-        # =====================================
-        ref_emb = bert_model.encode(ref_list, convert_to_tensor=True, device=device)
-        pred_emb = bert_model.encode(pred_list, convert_to_tensor=True, device=device)
-
-        sim_matrix = util.cos_sim(pred_emb, ref_emb).cpu().numpy()  # shape=(m,n)
-        cost_matrix = 1 - sim_matrix
-
-        # 匈牙利算法
-        row_ind, col_ind = linear_sum_assignment(cost_matrix)  # (pred_idx数组, ref_idx数组)
-        matched_pairs_bert = list(zip(row_ind, col_ind))
-
-        # 对BERT匹配对应用相似度阈值过滤
-        valid_pairs_bert = []
-        for (pi, ri) in matched_pairs_bert:
-            bert_sim = sim_matrix[pi, ri]
-            if bert_sim >= bert_threshold:
-                valid_pairs_bert.append((pi, ri, bert_sim))
-
-        k_bert = len(valid_pairs_bert)  # 过滤后的有效匹配数
-
-        # 更新 BERT 全局计数
-        total_matched_bert += k_bert
-        total_ref_bert += n
-        total_model_bert += m
-
-        # 统计平均 BERT similarity
-        for (_, _, sim_val) in valid_pairs_bert:
-            bert_sim_sum_global += sim_val
-        bert_pair_count_global += k_bert
-
-        # 计算本条需求的P/R/F1 (BERT)
-        precision_bert = k_bert / m if m > 0 else 0.0
-        recall_bert = k_bert / n if n > 0 else 0.0
-        f1_bert = (
-            2 * precision_bert * recall_bert / (precision_bert + recall_bert)
-            if (precision_bert + recall_bert) > 0
-            else 0.0
-        )
-
-        # =====================================
-        #  Part 2: ROUGE-based Matching + 阈值过滤
-        #  - 这里示例用 ROUGE-L_f 作为匹配度
-        # =====================================
-        # 先计算所有 (pred, ref) 的 rouge_l_f
-        # 以 cost = 1 - rouge_l_f
-        m_rouge_matrix = np.zeros((m, n), dtype=np.float32)
-        for i in range(m):
-            for j in range(n):
-                pred_text = pred_list[i]
-                ref_text = ref_list[j]
-                scores = rouge_scorer_obj.score(ref_text, pred_text)
-                rouge_l_f = scores["rougeL"].fmeasure  # 也可换成 scores["rouge1"], ...
-                m_rouge_matrix[i, j] = rouge_l_f
-
-        cost_matrix_rouge = 1 - m_rouge_matrix
-        row_ind_r, col_ind_r = linear_sum_assignment(cost_matrix_rouge)
-        matched_pairs_rouge = list(zip(row_ind_r, col_ind_r))
-
-        # 对ROUGE匹配对应用阈值过滤 (这里默认对 ROUGE-L_f)
-        valid_pairs_rouge = []
-        for (pi, ri) in matched_pairs_rouge:
-            r_l_f = m_rouge_matrix[pi, ri]  # 该pair的 rouge_l_f
-            if r_l_f >= rouge_threshold:
-                valid_pairs_rouge.append((pi, ri, r_l_f))
-
-        k_rouge = len(valid_pairs_rouge)
-        total_matched_rouge += k_rouge
-        total_ref_rouge += n
-        total_model_rouge += m
-
-        # 同时统计 ROUGE1/2/L 的累加值（只对有效pair）
-        for (pi, ri, _) in valid_pairs_rouge:
-            pred_text = pred_list[pi]
-            ref_text = ref_list[ri]
-            full_scores = rouge_scorer_obj.score(ref_text, pred_text)
-            rouge1_sum_global += full_scores["rouge1"].fmeasure
-            rouge2_sum_global += full_scores["rouge2"].fmeasure
-            rougel_sum_global += full_scores["rougeL"].fmeasure
-
-        rouge_pair_count_global += k_rouge
-
-        # 计算本条需求的 P/R/F1 (ROUGE)
-        precision_rouge = k_rouge / m if m > 0 else 0.0
-        recall_rouge = k_rouge / n if n > 0 else 0.0
-        f1_rouge = (
-            2 * precision_rouge * recall_rouge / (precision_rouge + recall_rouge)
-            if (precision_rouge + recall_rouge) > 0
-            else 0.0
-        )
-
-        # （可选）记录详情
-        details_list.append({
-            "id": req_id,
-            "requirement": gt_item["requirement"],
-            "ref_count": n,
-            "model_count": m,
-            # -- BERT
-            "bert_matched_pairs": k_bert,
-            "bert_precision": precision_bert,
-            "bert_recall": recall_bert,
-            "bert_f1": f1_bert,
-            # -- ROUGE
-            "rouge_matched_pairs": k_rouge,
-            "rouge_precision": precision_rouge,
-            "rouge_recall": recall_rouge,
-            "rouge_f1": f1_rouge
-        })
 
     # ========== 全局指标(BERT) ==========
     global_precision_bert = (

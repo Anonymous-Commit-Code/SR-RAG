@@ -1,7 +1,16 @@
-openai
-requests
-tenacity
-FlagEmbedding
-faiss-gpu
-gensim
-jieba
+openai>=1.0.0
+requests>=2.25.0
+tenacity>=8.0.0
+FlagEmbedding>=1.2.0
+faiss-gpu>=1.7.0
+faiss-cpu>=1.7.0  # 备选CPU版本
+gensim>=4.0.0
+jieba>=0.42.0
+sentence-transformers>=2.2.0
+rouge-score>=0.1.0
+scipy>=1.7.0
+torch>=1.10.0
+tqdm>=4.60.0
+numpy>=1.21.0
+pathlib2>=2.3.0  # Python 3.4+ 兼容性
+typing-extensions>=4.0.0

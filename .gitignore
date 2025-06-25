@@ -179,3 +179,12 @@ tags
 
 # wandb
 wandb
+
+# local env
+.envrc
+.env
+api_keys.py
+
+# CUDA files
+*.cubin
+*.ptx

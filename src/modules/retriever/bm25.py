@@ -17,7 +17,7 @@ def before_method_decorator(func):
     def wrapper(self, *args, **kwargs):
         if self.documents_buffer:
             self.dictionary.add_documents(
-                [self.cut(doc["分析准则"]) for doc in self.documents_buffer]
+                [self.cut(doc.get("safety_criterion", doc.get("分析准则", ""))) for doc in self.documents_buffer]
             )
             self.documents.extend(self.documents_buffer)
             self.documents_buffer = []
@@ -31,11 +31,14 @@ class BM25:
         self.documents = load_json_documents(file_path)
         self.dictionary = Dictionary([])
 
-        # 初始化词典
+        # 初始化词典，支持两种字段名
         for doc in self.documents:
-            self.dictionary.add_documents([self.cut(doc["safety_criterion"])])
+            # 优先使用 safety_criterion，如果不存在则使用 分析准则
+            criterion_text = doc.get("safety_criterion", doc.get("分析准则", ""))
+            if criterion_text:
+                self.dictionary.add_documents([self.cut(criterion_text)])
 
-        self.model = OkapiBM25Model(dictionary=self.dictionary)
+        self.model = OkapiBM25Model(dictionary=self.dictionary, k1=1.2)
         self.documents_buffer = []
 
     def cut(self, text: str):
@@ -62,8 +65,11 @@ class BM25:
     def get_topK(self, query: str, k=5):
         score_list = []
         for index, document in enumerate(self.documents):
-            score = self.get_score(query, document["safety_criterion"])
-            score_list.append((index, score))
+            # 支持两种字段名
+            criterion_text = document.get("safety_criterion", document.get("分析准则", ""))
+            if criterion_text:
+                score = self.get_score(query, criterion_text)
+                score_list.append((index, score))
 
         sorted_score = sorted(score_list, key=lambda x: x[1], reverse=True)
         top_k = [sorted_score[i][0] for i in range(min(k, len(sorted_score)))]
@@ -71,7 +77,7 @@ class BM25:
         return result_documents
 
     def retrieve(self, query: str, k_final: int = 5) -> list[str]:
-        results=[]
+        results = []
         for item in self.get_topK(query, k=k_final):
             results.append(item[1])
         return results

@@ -1,17 +1,15 @@
-import sys
-
-sys.path.append("src")
 import faiss
 from FlagEmbedding import FlagModel
 import numpy as np
 from modules.retriever.utils import load_json_documents, get_document_by_id
 import os
 import atexit
+from config import HNSW_CONFIG, get_data_path
 
 
 class HNSW:
     def __init__(
-        self, file_path="", save_path="", M=32, efSearch=32, efConstruction=32
+        self, file_path="", save_path="", M=None, efSearch=None, efConstruction=None
     ):
         """初始化HNSW索引
 
@@ -22,8 +20,13 @@ class HNSW:
             efSearch: 搜索时的候选邻居数
             efConstruction: 构建时的候选邻居数
         """
+        # 使用配置文件的默认值
+        M = M or HNSW_CONFIG["M"]
+        efSearch = efSearch or HNSW_CONFIG["efSearch"]
+        efConstruction = efConstruction or HNSW_CONFIG["efConstruction"]
+        
         self.embedding_model = FlagModel(
-            "models/BAAI/bge-large-zh-v1.5",
+            get_data_path("embedding_model"),
             query_instruction_for_retrieval="为这个句子生成表示以用于检索相关文章：",
             use_fp16=True,
         )
@@ -43,9 +46,13 @@ class HNSW:
                 self.vecdb.hnsw.efConstruction = efConstruction
                 self.vecdb.hnsw.efSearch = efSearch
                 if self.documents:
-                    self.build_vecdb(
-                        [doc["safety_criterion"] for doc in self.documents], save_path
-                    )
+                    # 支持两种字段名
+                    texts = []
+                    for doc in self.documents:
+                        criterion_text = doc.get("safety_criterion", doc.get("分析准则", ""))
+                        if criterion_text:
+                            texts.append(criterion_text)
+                    self.build_vecdb(texts, save_path)
         except Exception as e:
             print(f"Error initializing index: {e}")
             raise
@@ -55,9 +62,13 @@ class HNSW:
         try:
             if hasattr(self.embedding_model, 'stop_self_pool'):
                 self.embedding_model.stop_self_pool()
-            del self.embedding_model
-        except:
-            pass
+        except Exception as e:
+            print(f"Warning: Error during cleanup: {e}")
+        finally:
+            try:
+                del self.embedding_model
+            except Exception as e:
+                print(f"Warning: Error deleting embedding model: {e}")
 
     def __del__(self):
         """析构函数"""
@@ -85,13 +96,15 @@ class HNSW:
         self.vecdb.add(embeddings)
     
     def retrieve(self, query: str, k_final: int = 5) -> list[str]:
-        results=[]
+        results = []
         for item in self.get_topK(query, k=k_final):
             results.append(item[1])
         return results
 
-    def build_vecdb(self, texts, save_path=None, batch_size=32):
+    def build_vecdb(self, texts, save_path=None, batch_size=None):
         """构建向量数据库"""
+        batch_size = batch_size or HNSW_CONFIG["batch_size"]
+        
         texts_len = len(texts)
         n = (texts_len + batch_size - 1) // batch_size
         print(f"Building vector database with {texts_len} documents...")
@@ -112,12 +125,13 @@ class HNSW:
 
 if __name__ == "__main__":
     # 使用示例
-    index_path = "models/vector_db/safety_guidelines.index"
-    hnsw = HNSW(file_path="datasets/table/安全性分析准则_书.json", save_path=index_path)
+    from config import get_data_path
+    index_path = get_data_path("vector_db")
+    hnsw = HNSW(file_path=get_data_path("knowledge_base"), save_path=index_path)
     print(hnsw.retrieve("在其它阶段，采用飞行控制规律控制舵偏角达到预定的控制目的。"))
 
-    cr="testet"
-    reqs=["sas","dasd","te","test"]
+    cr = "testet"
+    reqs = ["sas", "dasd", "te", "test"]
     criterion_vec = hnsw.tokenize(cr)
     requirements_vec = hnsw.tokenize(reqs)
     similarity = criterion_vec @ requirements_vec.T

@@ -1,9 +1,5 @@
-import sys
-
-sys.path.append(f"src")
-
 import json
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 from modules.generator.generators import (
     RefinementGenerator,
     ClassificationGenerator,
@@ -11,12 +7,15 @@ from modules.generator.generators import (
     CriterionRewriteGenerator,
     ConsistencyGenerator,
     SafetyRequirementGenerator,
+    QueryRewriteGenerator,
 )
 from modules.retriever.multi_retriever import MultiRetriever
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 from tqdm import tqdm
 import numpy as np
+from config import CONCURRENCY_CONFIG, RETRIEVAL_CONFIG
+
 
 class InferenceEngine:
     def __init__(self, knowledge_base_path: str):
@@ -27,415 +26,208 @@ class InferenceEngine:
         self.criterion_rewrite_agent = CriterionRewriteGenerator()
         self.consistency_agent = ConsistencyGenerator()
         self.safety_requirement_agent = SafetyRequirementGenerator()
+        self.query_rewrite_agent = QueryRewriteGenerator()
 
         # 初始化检索器
         self.retriever = MultiRetriever(knowledge_base_path)
 
-        # 最大重试次数
-        self.max_retries = 3
-
-        # 设置最大线程数
-        self.max_workers = min(10, os.cpu_count() or 1)  # 使用CPU核心数但不超过3个线程
-        # 添加线程池
+        # 回溯和重试次数
+        self.max_shallow_backtrack = 3
+        self.max_deep_backtrack = 3 # 假设深度回溯也进行3次
+        
+        # 并发设置
+        self.max_workers = CONCURRENCY_CONFIG["max_workers"]
         self.executor = ThreadPoolExecutor(max_workers=self.max_workers)
 
-    def refine_requirement(self, requirement: str) -> List[Dict]:
-        """细化功能需求"""
-        # return self.refinement_agent.generate(requirement)
-        return {"need_refine": False, "sub_func_requirements": [requirement]}
+    def __del__(self):
+        if self.executor:
+            self.executor.shutdown(wait=True)
 
-    def classify_requirement(self, refined_requirements: List[Dict]) -> List[Dict]:
-        """对细化后的需求进行分类"""
-        return self.classification_agent.generate(refined_requirements)
+    def _rewrite_and_verify_criterion(self, criterion: str, sub_requirement: str) -> Tuple[bool, str, Optional[str]]:
+        """
+        执行浅回溯（重写和验证循环）。
+        返回 (是否成功, 最终准则, 失败原因)
+        """
+        current_criterion = criterion
+        feedback = None # 用于存储一致性检查失败的原因
+        
+        for _ in range(self.max_shallow_backtrack):
+            # 1. 重写准则
+            rewrite_result = self.criterion_rewrite_agent.generate(
+                [{"safety_criterion": current_criterion, "func_requirement": sub_requirement, "feedback": feedback}]
+            )
+            rewritten_criterion = rewrite_result.get("safety_criterion", current_criterion)
 
-    def retrieve_safety_criterions(
-        self, classified_requirements: List[Dict], k: int = 5
-    ) -> List[str]:
-        """检索相关的安全性分析准则"""
-        # 构建检索查询
-        query = " ".join(classified_requirements)
-        # Multi
-        return self.retriever.retrieve(query, k_final=k)
+            # 2. 一致性检查
+            consistency_result = self.consistency_agent.generate(
+                [{"safety_criterions": rewritten_criterion, "requirements": [sub_requirement]}]
+            )
 
-        #BM25
-        # return self.retriever.bm25.retrieve(query, k_final=k)
+            if consistency_result.get("is_consistent", False):
+                return True, rewritten_criterion, None # 成功
 
-        #HNSW
-        # return self.retriever.hnsw.retrieve(query, k_final=k)
-        # return ["工作状态发生转移时，对功能接口数据的取值进行检查，分析'取值未发生变化'或'取值变化'等情况下输出的正确性，并确保与当前飞行状态和目标状态相关的舵偏角δz、δx和δy计算结果的准确性", "系统应能够根据当前飞行状态和目标状态计算出舵偏角δz、δx和δy"]
+            # 准备下一次浅回溯
+            current_criterion = rewritten_criterion
+            feedback = consistency_result.get("reason", "The rewritten criterion is not consistent with the requirement.")
+        
+        return False, current_criterion, feedback # 浅回溯失败
 
-    def filter_safety_criterions(self, safety_criterions: List[str]) -> List[str]:
-        """过滤安全性分析准则"""
-        return self.filter_agent.generate([{"safety_criterions": safety_criterions}])
+    def _process_sub_requirement(self, sub_req: str) -> List[str]:
+        """
+        为单个子需求执行完整的处理流程（分类、检索、回溯、生成）
+        """
+        valid_criterions = []
+        original_query = sub_req
 
-    def __cal_consistent_by_vec(self, requirements: List[str], criterion: str):
-
-        criterion_vec =self.retriever.hnsw.tokenize(criterion)
-        requirements_vec = self.retriever.hnsw.tokenize(requirements)
-        scores = (criterion_vec @ requirements_vec.T)[0]
-
-        score = np.mean(scores)
-        if score > 0.4:
-            return {"is_consistent": True}
-        else:
-            return {"is_consistent": False}
-
-    def post_process_safety_criterions(
-        self, filtered_safety_criterions: List[str], requirements: List[Dict]
-    ) -> List[str]:
-        """对安全性分析准则进行后处理(重写和一致性检查)"""
-        processed_criterions = []
-
-        def process_single_criterion(criterion: str) -> Dict:
-            max_retries = 3  # 最大重试次数
-            current_criterion = criterion
-
-            for attempt in range(max_retries):
-                try:
-                    # 进行重写
-                    rewrite_result = self.criterion_rewrite_agent.generate(
-                        [
-                            {
-                                "safety_criterion": criterion,
-                                "func_requirements": requirements,
-                            }
-                        ]
-                    )
-
-                    # 如果没有被重写，直接返回原始准则，不进行一致性检查
-                    if not rewrite_result or not rewrite_result.get(
-                        "is_rewrited", False
-                    ):
-                        return {"is_valid": True, "safety_criterion": criterion}
-
-                    rewritten_criterion = rewrite_result["safety_criterion"]
-                    requirements_content=[item["sub_func_requirement"] for item in requirements]
-
-                    # 进行一致性检查
-
-                    # LLMs
-                    consistency_result = self.consistency_agent.generate(
-                        [
-                            {
-                                "safety_criterions": rewritten_criterion,
-                                "requirements": requirements_content,
-                            }
-                        ]
-                    )
-                    
-                    # Embedding
-                    # consistency_result = self.__cal_consistent_by_vec(requirements_content, rewritten_criterion)
-                    # No
-                    # consistency_result={"is_consistent": True}
-
-
-                    # 如果通过一致性检查，返回结果
-                    if consistency_result.get("is_consistent", False):
-                        return {
-                            "is_valid": True,
-                            "safety_criterion": rewritten_criterion,
-                        }
-
-                    # 如果不通过一致性检查且还有重试机会，使用重写后的准则继续下一轮重试
-                    current_criterion = rewritten_criterion
-
-                except Exception as e:
-                    print(f"准则后处理时出错 (尝试 {attempt + 1}/{max_retries}): {str(e)}")
-                    return {"is_valid": False, "safety_criterion": criterion}
-
-            # 如果所有重试都失败，返回原始准则
-            return {"is_valid": False, "safety_criterion": criterion}
-
-        # 使用线程池并行处理每个准则
-        futures = []
-        for criterion in filtered_safety_criterions:
-            futures.append(self.executor.submit(process_single_criterion, criterion))
-
-        # 收集结果
-        for future in futures:
+        for deep_attempt in range(self.max_deep_backtrack):
             try:
-                result = future.result()
-                if result["is_valid"]:
-                    processed_criterions.append(result["safety_criterion"])
+                # 1. 分类 (仅在第一次深回溯时进行)
+                if deep_attempt == 0:
+                    classification_result = self.classification_agent.generate([{"func_requirement": original_query}])
+                    query_for_retrieval = classification_result.get("class", "") + " " + original_query
+                else:
+                    # 深回溯：重写查询
+                    rewrite_query_result = self.query_rewrite_agent.generate([{"query": original_query}])
+                    query_for_retrieval = rewrite_query_result.get("new_query", original_query)
+
+                # 2. 检索
+                retrieved_criterions = self.retriever.retrieve(
+                    query_for_retrieval, k_final=RETRIEVAL_CONFIG["k_retrieval"]
+                )
+
+                # 3. 过滤 (可选，但论文中未明确提及在回溯循环中，此处为保持逻辑完整性)
+                # filtered_criterions = self.filter_agent.generate([{"safety_criterions": retrieved_criterions}])
+                # criterions_to_process = filtered_criterions.get("filtered_safety_criterions", [])
+                criterions_to_process = retrieved_criterions
+
+                # 4. 并行进行浅回溯（重写与验证）
+                criterions_after_shallow_backtrack = []
+                futures = {self.executor.submit(self._rewrite_and_verify_criterion, c, sub_req): c for c in criterions_to_process}
+                
+                for future in as_completed(futures):
+                    is_success, final_criterion, reason = future.result()
+                    if is_success:
+                        criterions_after_shallow_backtrack.append(final_criterion)
+
+                # 5. 检查是否成功
+                if criterions_after_shallow_backtrack:
+                    valid_criterions.extend(criterions_after_shallow_backtrack)
+                    return list(set(valid_criterions)) # 成功找到有效准则，退出深回溯
+
+                # 如果没有成功，深回溯将继续
+                original_query = query_for_retrieval # 更新查询以备下次重写
+
             except Exception as e:
-                print(f"处理后处理结果时出错: {str(e)}")
-
-        return list(set(processed_criterions))  # 去重返回
-
-    def process_single_requirement(self, requirement: Dict) -> Dict[str, Any]:
-        """处理单个细化后的需求"""
-        try:
-            # 分类需求
-            classified_requirement = self.classify_requirement(
-                [{"func_requirement": requirement}]
-            )
-
-            # No 分类
-            # classified_requirement={}
-            # classified_requirement["class"]=""
-
-            # 检索阶段
-            safety_criterions = self.retrieve_safety_criterions(
-                [classified_requirement["class"] + " " + requirement]
-            )
-
-            # 过滤准则
-            filtered_safety_criterions = self.filter_safety_criterions(
-                safety_criterions
-            )
-
-            # No 过滤
-            # filtered_safety_criterions={  
-            #     "need_filter": False,
-            #     "safety_criterions": safety_criterions
-            # }
-
-            # 返回中间结果
-            return {
-                "requirement": requirement,
-                "classified_requirement": classified_requirement,
-                "filtered_safety_criterions": filtered_safety_criterions,
-                "status": "success",
-            }
-
-        except Exception as e:
-            return {
-                "requirement": requirement,
-                "status": "failed",
-                "message": f"处理过程出错: {str(e)}",
-            }
+                print(f"Error processing sub-requirement '{sub_req}' on deep attempt {deep_attempt+1}: {e}")
+                continue # 继续下一次深回溯尝试
+        
+        print(f"Failed to process sub-requirement '{sub_req}' after all deep backtracking attempts.")
+        return []
 
     def process_requirement(self, requirement: str) -> Dict[str, Any]:
-        """处理单个功能需求的主流程"""
-        # 细化需求
-        refined_requirements = self.refine_requirement(requirement)
-        if not refined_requirements["need_refine"]:
-            refined_requirements["sub_func_requirements"] = [requirement]
+        """
+        处理单个功能需求的主流程，遵循论文描述。
+        """
+        # 1. 需求细化
+        refinement_result = self.refinement_agent.generate([{"requirement": requirement}])
+        if refinement_result.get("need_refine", False):
+            sub_requirements = [item['sub_func_requirement'] for item in refinement_result.get("sub_func_requirements", [])]
+        else:
+            sub_requirements = [requirement]
+
+        # 2. 并行处理所有子需求
+        all_processed_criterions = []
+        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            future_to_sub_req = {executor.submit(self._process_sub_requirement, sub_req): sub_req for sub_req in sub_requirements}
+            for future in as_completed(future_to_sub_req):
+                sub_req = future_to_sub_req[future]
+                try:
+                    criterions = future.result()
+                    all_processed_criterions.extend(criterions)
+                except Exception as e:
+                    print(f"An exception occurred while processing sub-requirement '{sub_req}': {e}")
         
-        # No 细化
-        # refined_requirements = {}
-        # refined_requirements["sub_func_requirements"] = [requirement]
+        # 去重
+        final_criterions = sorted(list(set(all_processed_criterions)))
 
-        # 限制并发处理的需求数量
-        batch_size = self.max_workers
-        results = []
-
-        # 分批处理细化需求
-        for i in range(
-            0, len(refined_requirements["sub_func_requirements"]), batch_size
-        ):
-            batch = refined_requirements["sub_func_requirements"][i : i + batch_size]
-
-            # 使用线程池并行处理当前批次的需求
-            future_to_req = {
-                self.executor.submit(self.process_single_requirement, req): req
-                for req in batch
+        # 3. 最后统一生成安全需求
+        if not final_criterions:
+             return {
+                "original_requirement": requirement,
+                "refined_requirements": sub_requirements,
+                "final_safety_requirements": []
             }
 
-            # 处理当前批次的结果
-            for future in future_to_req:
-                try:
-                    result = future.result()
-                    results.append(result)
-                except Exception as e:
-                    results.append(
-                        {
-                            "requirement": future_to_req[future],
-                            "status": "failed",
-                            "message": f"线程执行出错: {str(e)}",
-                        }
-                    )
-
-        # 汇总结果
-        success_results = [r for r in results if r["status"] == "success"]
-        if not success_results:
-            return {"status": "failed", "message": "所有子需求处理均失败", "details": results}
-
-        # 汇总所有过滤后的准则
-        all_filtered_criterions = []
-        all_requirements = []
-        for result in success_results:
-            all_filtered_criterions.extend(
-                result["filtered_safety_criterions"]["safety_criterions"]
-            )
-            all_requirements.append(
-                {
-                    "sub_func_requirement": result["requirement"],
-                    "classified": result["classified_requirement"],
-                }
-            )
-        all_filtered_criterions = list(set(all_filtered_criterions))
-
-        # 使用汇总后的准则和需求进行后处理
-        processed_safety_criterions = self.post_process_safety_criterions(
-            all_filtered_criterions, all_requirements
+        safety_requirements_result = self.safety_requirement_agent.generate(
+            [{"safety_criterions": final_criterions, "requirements": sub_requirements}]
         )
-
-        safety_requirements = self.generate_safety_requirements(
-            processed_safety_criterions, all_requirements  # 使用后处理后的准则
-        )
-
-        # 保存结果到JSON文件
-        result = {
-            "requirement": requirement,
-            "refined_requirements": refined_requirements,
-            "processed_results": results,
-            "safety_requirements": safety_requirements,
-            "original_safety_criterions": all_filtered_criterions,
-            "processed_safety_criterions": processed_safety_criterions,
-            "status": "success",
+        
+        return {
+            "original_requirement": requirement,
+            "refined_requirements": sub_requirements,
+            "final_safety_requirements": safety_requirements_result.get("safety_requirements", []),
         }
 
-        try:
-            output_path = "experiments/requirements_output_0309.json"
-            os.makedirs(os.path.dirname(output_path), exist_ok=True)
-            with open(output_path, "w", encoding="utf-8") as f:
-                json.dump(result, f, ensure_ascii=False, indent=2)
-        except Exception as e:
-            print(f"保存结果到JSON文件时出错: {str(e)}")
-
-        return result
-
-    def generate_safety_requirements(
-        self, safety_criterions: List[str], requirements: List[Dict]
-    ) -> List[Dict]:
-        """生成安全性需求"""
-        try:
-            # 构造输入数据
-            input_data = {
-                "func_requirements": requirements,
-                "safety_criterions": safety_criterions,
-            }
-
-            # 生成安全性需求
-            result = self.safety_requirement_agent.generate([input_data])
-
-            return result["safety_requirements"]
-
-        except Exception as e:
-            print(f"生成安全性需求时出错: {str(e)}")
-            return []
-
-    def __del__(self):
-        """确保线程池正确关闭"""
-        self.executor.shutdown(wait=True)
-
     def process_requirements_from_json(self, input_json_path: str) -> Dict[str, Any]:
-        """从JSON文件读取并处理多个需求"""
+        """
+        从JSON文件读取需求列表并处理。
+        """
         try:
-            # 读取输入JSON文件
-            with open(input_json_path, "r", encoding="utf-8") as f:
-                requirements = json.load(f)
-
-            # 创建输出目录
-            output_dir = "experiments/requirements_results_0309"
-            os.makedirs(output_dir, exist_ok=True)
-
-            all_results = []
-
-            # 创建线程池
-            with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
-                # 提交所有任务
-                future_to_req = {
-                    executor.submit(
-                        self._process_single_requirement, req, output_dir
-                    ): req
-                    for req in requirements
-                }
-
-                # 使用tqdm显示进度
-                with tqdm(total=len(requirements), desc="处理需求") as pbar:
-                    for future in as_completed(future_to_req):
-                        req = future_to_req[future]
-                        try:
-                            result = future.result()
-                            all_results.append(result)
-                        except Exception as e:
-                            print(f"处理需求 {req['id']} 时出错: {str(e)}")
-                            all_results.append(
-                                {
-                                    "id": req["id"],
-                                    "status": "failed",
-                                    "message": f"处理出错: {str(e)}",
-                                    "original_requirement": req["requirement"],
-                                    "analysis": req.get("analysis", ""),
-                                }
-                            )
-                        finally:
-                            pbar.update(1)
-
-            # 按ID排序结果
-            all_results.sort(key=lambda x: x["id"])
-
-            # 保存汇总结果
-            summary_result = {
-                "total_requirements": len(requirements),
-                "successful_requirements": len(
-                    [r for r in all_results if r.get("status") != "failed"]
-                ),
-                "failed_requirements": len(
-                    [r for r in all_results if r.get("status") == "failed"]
-                ),
-                "processed_requirements": all_results,
-            }
-
-            summary_path = "experiments/requirements_output_summary_0309.json"
-            with open(summary_path, "w", encoding="utf-8") as f:
-                json.dump(summary_result, f, ensure_ascii=False, indent=2)
-
-            return summary_result
-
+            with open(input_json_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
         except Exception as e:
-            print(f"处理需求时出错: {str(e)}")
-            return {"status": "failed", "message": f"处理需求时出错: {str(e)}"}
+            print(f"Error reading or parsing JSON file: {e}")
+            return {}
+
+        results = {}
+        for item in tqdm(data, desc="Processing Requirements"):
+            req_id = item.get("id")
+            req_text = item.get("requirement")
+            if not req_id or not req_text:
+                continue
+            
+            result = self.process_requirement(req_text)
+            results[req_id] = result
+        
+        return results
+
+    def _save_chunk(self, chunk_data, chunk_index):
+        output_dir = "output_chunks"
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        
+        file_path = os.path.join(output_dir, f"chunk_{chunk_index}.json")
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(chunk_data, f, ensure_ascii=False, indent=4)
 
     def _process_single_requirement(self, req: Dict, output_dir: str) -> Dict:
-        """处理单个需求并保存结果"""
+        req_id = req["id"]
         try:
-            requirement_id = req["id"]
-            requirement_text = req["requirement"]
-
-            # 处理单个需求
-            result = self.process_requirement(requirement_text)
-
-            # 添加原始需求信息
-            result.update(
-                {
-                    "id": requirement_id,
-                    "original_requirement": requirement_text,
-                    "analysis": req.get("analysis", ""),
-                }
-            )
-
-            # 保存单个需求的结果
-            output_path = os.path.join(output_dir, f"requirement_{requirement_id}.json")
-            with open(output_path, "w", encoding="utf-8") as f:
-                json.dump(result, f, ensure_ascii=False, indent=2)
-
-            return result
-
+            result = self.process_requirement(req["requirement"])
+            # 保存结果到单独的文件
+            file_path = os.path.join(output_dir, f"{req_id}.json")
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump(result, f, ensure_ascii=False, indent=4)
+            return {"id": req_id, "status": "success"}
         except Exception as e:
-            raise Exception(f"处理需求 {req['id']} 时出错: {str(e)}")
-
+            return {"id": req_id, "status": "failed", "reason": str(e)}
 
 def main():
     # 使用示例
-    engine = InferenceEngine("datasets/database.json")
+    # 请确保你的知识库路径是正确的
+    knowledge_base_path = "datasets/table/安全性分析准则_书.json"
+    engine = InferenceEngine(knowledge_base_path)
 
-    # 从JSON文件读取需求并处理
-    input_json_path = "datasets/testset/gt.json"
-    result = engine.process_requirements_from_json(input_json_path)
+    # 处理单个需求
+    test_requirement = "系统应处理油门杆信号"
+    result = engine.process_requirement(test_requirement)
+    print(json.dumps(result, indent=4, ensure_ascii=False))
 
-    if isinstance(result, dict) and result.get("status") != "failed":
-        print("\n处理成功:")
-        print(f"总共处理了 {result['total_requirements']} 个需求")
-        print(f"成功: {result['successful_requirements']} 个")
-        print(f"失败: {result['failed_requirements']} 个")
-        print(f"结果已保存到 experiments/requirements_results/ 目录")
-        print(f"汇总结果已保存到 experiments/requirements_output_summary.json")
-    else:
-        print("处理失败:", result.get("message", "未知错误"))
-
+    # # 从文件批量处理
+    # input_file = "datasets/tests/gt.json" # 你的输入文件
+    # all_results = engine.process_requirements_from_json(input_file)
+    # with open("output.json", 'w', encoding='utf-8') as f:
+    #      json.dump(all_results, f, ensure_ascii=False, indent=4)
 
 if __name__ == "__main__":
     main()

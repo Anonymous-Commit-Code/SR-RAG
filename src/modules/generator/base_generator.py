@@ -1,5 +1,3 @@
-import sys
-sys.path.append("src")
 from abc import ABC, abstractmethod
 from modules.generator.client.openai_client import OpenAIClient
 from modules.generator.prompt.prompt_factory import create_prompt

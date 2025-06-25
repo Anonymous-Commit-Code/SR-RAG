@@ -1,6 +1,3 @@
-import sys
-
-sys.path.append("src")
 import time
 import random
 from tenacity import retry, stop_after_attempt, wait_exponential
@@ -13,13 +10,13 @@ from modules.generator.client.openai_client_base import (
     QwQAPIClient,
     RerankLoRAClient,
     ClassifyLoRAClient,
-    FilterLoRAClient
-
+    FilterLoRAClient,
 )
+from config import MODEL_CONFIG
 
 
 class OpenAIClient:
-    def __init__(self, client_type="red"):
+    def __init__(self, client_type="qwen"):
         self.client = self._initialize_client(client_type)
         self.type = client_type
 
@@ -43,15 +40,22 @@ class OpenAIClient:
         elif client_type.startswith("qwq"):
             return QwQAPIClient()
         elif client_type.startswith("rerank"):
-            return RerankLoRAClient
-        elif client_type.startwiths("classify"):
-            return ClassifyLoRAClient
-        elif client_type.startwiths("filter"):
-            return FilterLoRAClient
-        
+            return RerankLoRAClient()
+        elif client_type.startswith("classify"):
+            return ClassifyLoRAClient()
+        elif client_type.startswith("filter"):
+            return FilterLoRAClient()
+        else:
+            # 默认返回 QwenAPIClient
+            return QwenAPIClient()
 
     @retry(
-        stop=stop_after_attempt(5), wait=wait_exponential(multiplier=2, min=4, max=10)
+        stop=stop_after_attempt(MODEL_CONFIG["max_retries"]),
+        wait=wait_exponential(
+            multiplier=MODEL_CONFIG["retry_delay"]["multiplier"],
+            min=MODEL_CONFIG["retry_delay"]["min"],
+            max=MODEL_CONFIG["retry_delay"]["max"],
+        ),
     )
     def get_response(self, prompt):
         """
@@ -68,9 +72,9 @@ class OpenAIClient:
                     {"role": "system", "content": "You are a helpful assistant."},
                     {"role": "user", "content": prompt},
                 ],
-                "max_tokens": 16384,
-                "temperature": 0.3,
-                "top_p": 1.0,
+                "max_tokens": MODEL_CONFIG["max_tokens"],
+                "temperature": MODEL_CONFIG["temperature"],
+                "top_p": MODEL_CONFIG["top_p"],
             }
 
             status, response = self.client.chat(param)

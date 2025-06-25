@@ -1,10 +1,15 @@
 from openai import OpenAI
+from config import MODEL_CONFIG
 
 
 class OpenAIClientBase(object):
-    def __init__(self, cfg=None):
-        # 初始化工作
-        pass
+    def __init__(self, model_name, cfg=None):
+        if cfg is None:
+            cfg = MODEL_CONFIG
+        self.model_name = model_name
+        self.base_url = cfg["endpoints"].get(model_name)
+        self.api_key = cfg["api_keys"].get(model_name, "dummy-token")
+        self.client = OpenAI(base_url=self.base_url, api_key=self.api_key)
 
     def chat(self, param):
         """统一的参数列表:
@@ -21,14 +26,7 @@ class OpenAIClientBase(object):
 
 class QwenAPIClient(OpenAIClientBase):
     def __init__(self, cfg=None):
-        super().__init__(cfg)
-        from openai import OpenAI
-
-        # 连接到本地vllm服务
-        self.client = OpenAI(
-            base_url="http://localhost:8001/v1",
-            api_key="dummy-token",  # vllm不需要真实的api key
-        )
+        super().__init__("qwen", cfg)
 
     def chat(self, param):
         try:
@@ -36,9 +34,9 @@ class QwenAPIClient(OpenAIClientBase):
                 model="Qwen2.5-72B-Instruct",  # 默认模型
                 messages=param.get("messages", []),
                 stream=False,
-                max_tokens=param.get("max_tokens", 1024),
-                temperature=param.get("temperature", 0.7),
-                top_p=param.get("top_p", 1.0),
+                max_tokens=param.get("max_tokens", MODEL_CONFIG["max_tokens"]),
+                temperature=param.get("temperature", MODEL_CONFIG["temperature"]),
+                top_p=param.get("top_p", MODEL_CONFIG["top_p"]),
             )
             return "succeed", completion
         except Exception as e:
@@ -47,23 +45,17 @@ class QwenAPIClient(OpenAIClientBase):
 
 class DeepSeekR1APIClient(OpenAIClientBase):
     def __init__(self, cfg=None):
-        super().__init__(cfg)
-        from openai import OpenAI
-
-        self.client = OpenAI(
-            base_url="",
-            api_key="",
-        )
+        super().__init__("deepseek-r1", cfg)
 
     def chat(self, param):
         try:
             completion = self.client.chat.completions.create(
-                model="",
+                model="deepseek-chat",
                 messages=param.get("messages", []),
                 stream=False,
-                max_tokens=param.get("max_tokens", 1024),
-                temperature=param.get("temperature", 0.7),
-                top_p=param.get("top_p", 1.0),
+                max_tokens=param.get("max_tokens", MODEL_CONFIG["max_tokens"]),
+                temperature=param.get("temperature", MODEL_CONFIG["temperature"]),
+                top_p=param.get("top_p", MODEL_CONFIG["top_p"]),
             )
             return "succeed", completion
         except Exception as e:
@@ -72,14 +64,7 @@ class DeepSeekR1APIClient(OpenAIClientBase):
 
 class QwQAPIClient(OpenAIClientBase):
     def __init__(self, cfg=None):
-        super().__init__(cfg)
-        from openai import OpenAI
-
-        # 连接到本地vllm服务
-        self.client = OpenAI(
-            base_url="http://localhost:8002/v1",
-            api_key="dummy-token",  # vllm不需要真实的api key
-        )
+        super().__init__("qwq", cfg)
 
     def chat(self, param):
         try:
@@ -87,9 +72,9 @@ class QwQAPIClient(OpenAIClientBase):
                 model="qwq",  # 默认模型
                 messages=param.get("messages", []),
                 stream=False,
-                max_tokens=param.get("max_tokens", 1024),
-                temperature=param.get("temperature", 0.7),
-                top_p=param.get("top_p", 1.0),
+                max_tokens=param.get("max_tokens", MODEL_CONFIG["max_tokens"]),
+                temperature=param.get("temperature", MODEL_CONFIG["temperature"]),
+                top_p=param.get("top_p", MODEL_CONFIG["top_p"]),
             )
             return "succeed", completion
         except Exception as e:
@@ -98,23 +83,17 @@ class QwQAPIClient(OpenAIClientBase):
 
 class DeepSeekV3APIClient(OpenAIClientBase):
     def __init__(self, cfg=None):
-        super().__init__(cfg)
-        from openai import OpenAI
-
-        self.client = OpenAI(
-            base_url="",
-            api_key="",
-        )
+        super().__init__("deepseek-v3", cfg)
 
     def chat(self, param):
         try:
             completion = self.client.chat.completions.create(
-                model="",
+                model="deepseek-coder",
                 messages=param.get("messages", []),
                 stream=False,
-                max_tokens=param.get("max_tokens", 1024),
-                temperature=param.get("temperature", 0.7),
-                top_p=param.get("top_p", 1.0),
+                max_tokens=param.get("max_tokens", MODEL_CONFIG["max_tokens"]),
+                temperature=param.get("temperature", MODEL_CONFIG["temperature"]),
+                top_p=param.get("top_p", MODEL_CONFIG["top_p"]),
             )
             return "succeed", completion
         except Exception as e:
@@ -123,14 +102,7 @@ class DeepSeekV3APIClient(OpenAIClientBase):
 
 class LlaMA3_3APIClient(OpenAIClientBase):
     def __init__(self, cfg=None):
-        super().__init__(cfg)
-        from openai import OpenAI
-
-        # 连接到本地vllm服务
-        self.client = OpenAI(
-            base_url="http://localhost:8003/v1",
-            api_key="dummy-token",  # vllm不需要真实的api key
-        )
+        super().__init__("llama", cfg)
 
     def chat(self, param):
         try:
@@ -138,9 +110,9 @@ class LlaMA3_3APIClient(OpenAIClientBase):
                 model="llama",  # 默认模型
                 messages=param.get("messages", []),
                 stream=False,
-                max_tokens=param.get("max_tokens", 1024),
-                temperature=param.get("temperature", 0.7),
-                top_p=param.get("top_p", 1.0),
+                max_tokens=param.get("max_tokens", MODEL_CONFIG["max_tokens"]),
+                temperature=param.get("temperature", MODEL_CONFIG["temperature"]),
+                top_p=param.get("top_p", MODEL_CONFIG["top_p"]),
             )
             return "succeed", completion
         except Exception as e:
@@ -149,14 +121,7 @@ class LlaMA3_3APIClient(OpenAIClientBase):
 
 class VLLMClient(OpenAIClientBase):
     def __init__(self, cfg=None):
-        super().__init__(cfg)
-        from openai import OpenAI
-
-        # 连接到本地vllm服务
-        self.client = OpenAI(
-            base_url="http://localhost:8004/v1",
-            api_key="dummy-token",  # vllm不需要真实的api key
-        )
+        super().__init__("vllm", cfg)
 
     def chat(self, param):
         try:
@@ -164,9 +129,9 @@ class VLLMClient(OpenAIClientBase):
                 model="Qwen2.5-72B-Instruct",  # 默认模型
                 messages=param.get("messages", []),
                 stream=False,
-                max_tokens=param.get("max_tokens", 1024),
-                temperature=param.get("temperature", 0.7),
-                top_p=param.get("top_p", 1.0),
+                max_tokens=param.get("max_tokens", MODEL_CONFIG["max_tokens"]),
+                temperature=param.get("temperature", MODEL_CONFIG["temperature"]),
+                top_p=param.get("top_p", MODEL_CONFIG["top_p"]),
             )
             return "succeed", completion
         except Exception as e:
@@ -175,14 +140,7 @@ class VLLMClient(OpenAIClientBase):
 
 class RerankLoRAClient(OpenAIClientBase):
     def __init__(self, cfg=None):
-        super().__init__(cfg)
-        from openai import OpenAI
-
-        # 连接到本地vllm服务
-        self.client = OpenAI(
-            base_url="http://localhost:8001/v1",
-            api_key="dummy-token",  # vllm不需要真实的api key
-        )
+        super().__init__("rerank", cfg)
 
     def chat(self, param):
         try:
@@ -190,9 +148,9 @@ class RerankLoRAClient(OpenAIClientBase):
                 model="Qwen2.5-72B-Instruct-LoRA-Rerank",  # 默认模型
                 messages=param.get("messages", []),
                 stream=False,
-                max_tokens=param.get("max_tokens", 1024),
-                temperature=param.get("temperature", 0.7),
-                top_p=param.get("top_p", 1.0),
+                max_tokens=param.get("max_tokens", MODEL_CONFIG["max_tokens"]),
+                temperature=param.get("temperature", MODEL_CONFIG["temperature"]),
+                top_p=param.get("top_p", MODEL_CONFIG["top_p"]),
             )
             return "succeed", completion
         except Exception as e:
@@ -200,14 +158,7 @@ class RerankLoRAClient(OpenAIClientBase):
 
 class ClassifyLoRAClient(OpenAIClientBase):
     def __init__(self, cfg=None):
-        super().__init__(cfg)
-        from openai import OpenAI
-
-        # 连接到本地vllm服务
-        self.client = OpenAI(
-            base_url="http://localhost:8001/v1",
-            api_key="dummy-token",  # vllm不需要真实的api key
-        )
+        super().__init__("classify", cfg)
 
     def chat(self, param):
         try:
@@ -215,9 +166,9 @@ class ClassifyLoRAClient(OpenAIClientBase):
                 model="Qwen2.5-72B-Instruct-LoRA-Classify",  # 默认模型
                 messages=param.get("messages", []),
                 stream=False,
-                max_tokens=param.get("max_tokens", 1024),
-                temperature=param.get("temperature", 0.7),
-                top_p=param.get("top_p", 1.0),
+                max_tokens=param.get("max_tokens", MODEL_CONFIG["max_tokens"]),
+                temperature=param.get("temperature", MODEL_CONFIG["temperature"]),
+                top_p=param.get("top_p", MODEL_CONFIG["top_p"]),
             )
             return "succeed", completion
         except Exception as e:
@@ -225,14 +176,7 @@ class ClassifyLoRAClient(OpenAIClientBase):
 
 class FilterLoRAClient(OpenAIClientBase):
     def __init__(self, cfg=None):
-        super().__init__(cfg)
-        from openai import OpenAI
-
-        # 连接到本地vllm服务
-        self.client = OpenAI(
-            base_url="http://localhost:8001/v1",
-            api_key="dummy-token",  # vllm不需要真实的api key
-        )
+        super().__init__("filter", cfg)
 
     def chat(self, param):
         try:
@@ -240,9 +184,9 @@ class FilterLoRAClient(OpenAIClientBase):
                 model="Qwen2.5-72B-Instruct-LoRA-Filter",  # 默认模型
                 messages=param.get("messages", []),
                 stream=False,
-                max_tokens=param.get("max_tokens", 1024),
-                temperature=param.get("temperature", 0.7),
-                top_p=param.get("top_p", 1.0),
+                max_tokens=param.get("max_tokens", MODEL_CONFIG["max_tokens"]),
+                temperature=param.get("temperature", MODEL_CONFIG["temperature"]),
+                top_p=param.get("top_p", MODEL_CONFIG["top_p"]),
             )
             return "succeed", completion
         except Exception as e:
