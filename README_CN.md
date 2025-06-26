@@ -89,6 +89,14 @@ experiments_results/
 
 ## 🔗 模型链接
 
+### 预训练模型
+
+| 模型类型 | 平台 | 下载链接 | 描述 |
+|----------|------|----------|------|
+| **SR-RAG完整版** | ModelScope | [🔗 下载](https://www.modelscope.cn/models/lurengu/SR-RAG) | SR-RAG LoRA |
+
+> **📋 说明**: 更多模型变体和训练检查点将逐步发布。
+
 ## ⚙️ 配置说明
 
 框架使用`config.py`中的集中配置系统：

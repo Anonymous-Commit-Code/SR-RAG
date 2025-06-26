@@ -88,6 +88,14 @@ experiments_results/
 
 ## 🔗 Model Links
 
+### Pre-trained Models
+
+| Model Type | Platform | Download Link | Description |
+|------------|----------|---------------|-------------|
+| **SR-RAG Complete** | ModelScope | [🔗 Download](https://www.modelscope.cn/models/lurengu/SR-RAG) | SR-RAG LoRA |
+
+> **📋 Note**: More model variants and training checkpoints will be released progressively.
+
 ## ⚙️ Configuration
 
 The framework uses a centralized configuration system in `config.py`:
