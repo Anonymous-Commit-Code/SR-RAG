@@ -1,5 +1,7 @@
 import time
 import random
+import asyncio
+import json
 from tenacity import retry, stop_after_attempt, wait_exponential
 from modules.generator.client.openai_client_base import (
     QwenAPIClient,
@@ -16,7 +18,9 @@ from config import MODEL_CONFIG
 
 
 class OpenAIClient:
-    def __init__(self, client_type="qwen"):
+    def __init__(self, model="qwen"):
+        # 支持传入model参数作为client_type的别名
+        client_type = model if isinstance(model, str) else "qwen"
         self.client = self._initialize_client(client_type)
         self.type = client_type
 
@@ -86,3 +90,36 @@ class OpenAIClient:
         except Exception as e:
             print(f"Error in get_response: {str(e)}")
             raise e
+
+    async def generate_async(self, prompt):
+        """
+        异步生成响应，用于数据合成流水线
+        
+        :param prompt: 输入提示
+        :return: 生成的响应（尝试解析为JSON，失败则返回原始字符串）
+        """
+        try:
+            # 使用asyncio在线程池中运行同步方法
+            loop = asyncio.get_event_loop()
+            response = await loop.run_in_executor(None, self.get_response, prompt)
+            
+            # 尝试解析JSON响应
+            try:
+                if isinstance(response, str):
+                    # 提取JSON部分（如果响应包含```json...```格式）
+                    if "```json" in response:
+                        json_start = response.find("```json") + 7
+                        json_end = response.find("```", json_start)
+                        if json_end != -1:
+                            json_str = response[json_start:json_end].strip()
+                            return json.loads(json_str)
+                    # 尝试直接解析整个响应
+                    return json.loads(response)
+                return response
+            except json.JSONDecodeError:
+                # 如果无法解析为JSON，返回原始响应
+                return response
+                
+        except Exception as e:
+            print(f"Error in generate_async: {e}")
+            return None

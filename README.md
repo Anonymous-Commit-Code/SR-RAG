@@ -1,101 +1,190 @@
-<div align=center>
+<div align="center">
 
 # SR-RAG: An Adaptive Retrieval-Augmented Framework for Aviation Software Safety Requirement Generation
 
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Paper](https://img.shields.io/badge/paper-arXiv-red.svg)](https://arxiv.org)
+
+*An intelligent framework for generating high-quality aviation software safety requirements through adaptive retrieval and generation techniques.*
+
+[**中文文档**](README_CN.md) | [**English**](README.md)
+
 </div>
 
-## 项目概述
+## 📋 Table of Contents
 
-SR-RAG是一个自适应的检索增强框架，专门用于航空软件安全需求生成。该框架结合了多种检索方法和生成模型，能够智能地生成高质量的安全需求。
+- [Overview](#overview)
+- [Quick Start](#quick-start)
+- [Data Organization](#data-organization)
+- [Model Links](#model-links)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Evaluation](#evaluation)
 
-## 🚀 快速开始
+## 🎯 Overview
 
-### 1. 环境设置
+SR-RAG (Safety Requirement - Retrieval Augmented Generation) is an adaptive framework specifically designed for aviation software safety requirement generation. It combines multiple retrieval methods with advanced generation models to intelligently produce high-quality safety requirements that comply with aviation industry standards.
+
+### Key Components
+
+- **Multi-Modal Retrieval**: Integrates BM25 and HNSW-based semantic search
+- **Adaptive Generation**: Smart model selection based on requirement complexity
+- **Quality Assurance**: Built-in consistency checking and refinement processes
+- **Scalable Architecture**: Supports parallel processing and multiple model backends
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Python 3.10+
+- CUDA-compatible GPU (recommended)
+- At least 16GB RAM
+
+### Installation
 
 ```bash
-# 安装依赖
+# Clone the repository
+git clone https://github.com/your-username/SR-RAG.git
+cd SR-RAG
+
+# Install dependencies
 pip install -r requirements.txt
 
-# 确保必要目录存在
+# Initialize directories and configuration
 python config.py
 ```
 
-### 2. 基本使用
+## 📁 Data Organization
 
-```python
-from src.modules.inference import InferenceEngine
-from config import get_data_path
+The project follows a structured data organization for easy access and management:
 
-# 初始化推理引擎
-engine = InferenceEngine(get_data_path("knowledge_base"))
-
-# 处理单个需求
-result = engine.process_requirement("系统应能够处理飞行控制数据")
-print(result)
-```
-
-### 3. 配置文件
-
-项目使用 `config.py` 管理所有配置项：
-
-- **数据路径**: 知识库、测试数据等
-- **模型参数**: 温度、最大令牌数等
-- **检索配置**: K值、阈值等
-- **并发设置**: 线程数、重试次数等
-
-## 📁 项目结构
+### Dataset Structure
 
 ```
-SR-RAG/
-├── config.py                 # 配置文件 (新增)
-├── requirements.txt           # 依赖列表 (已更新)
-├── src/
-│   ├── modules/
-│   │   ├── generator/         # 生成器模块
-│   │   ├── retriever/         # 检索器模块 (已修复)
-│   │   └── inference.py       # 推理引擎 (已优化)
-│   ├── utils/                 # 工具函数
-│   │   └── dataloader.py      # 数据加载器 (已实现)
-│   └── evaluation/            # 评估模块 (已优化)
-├── datasets/                  # 数据集
-└── experiments/               # 实验结果
+datasets/
+├── database.json                    # 📚 Knowledge Base (10,666 entries)
+│   └── Aviation safety guidelines, standards, and regulations
+├── testset/
+│   └── gt.json                      # 🧪 Test Set (6,800 test cases)
+├── train/                           # 🎯 Training Data (Currently empty - for future extensions)
+├── requirements_processed_hypo.json # 🔄 Processed Requirements (5,334 entries)
+├── docx/                           # 📄 Original Document Sources
+└── stopwords/                      # 🚫 Stop Words for Text Processing
 ```
 
-## 🔧 主要组件
+### Experimental Results
 
-### 1. 多路检索器 (MultiRetriever)
-- 集成BM25和HNSW检索
-- 支持重排序和阈值过滤
-- 可配置的检索参数
+```
+experiments_results/
+├── evaluation_result_SR_RAG.txt     # 🏆 Main Framework Results
+├── evaluation_result_Qwen.txt       # 🤖 Qwen Model Results
+├── evaluation_result_QwQ.txt        # 🤖 QwQ Model Results  
+├── evaluation_result_llama.txt      # 🤖 LLaMA Model Results
+├── evaluation_result_BM25.txt       # 🔍 BM25 Baseline Results
+├── evaluation_result_HNSW.txt       # 🔍 HNSW Baseline Results
+└── evaluation_result_*.txt          # 📊 Other Experimental Variants
+```
 
-### 2. 生成器模块 (Generators)
-- 统一的基础生成器接口
-- 支持多种模型后端
-- 可配置的提示模板
+## 🔗 Model Links
 
-### 3. 推理引擎 (InferenceEngine)
-- 端到端的需求处理流程
-- 并行处理和错误恢复
-- 灵活的配置选项
+## ⚙️ Configuration
 
-## 🛠️ 配置选项
+The framework uses a centralized configuration system in `config.py`:
 
-### 模型配置
+### Model Configuration
+
 ```python
 MODEL_CONFIG = {
-    "default_model": "qwen",
-    "max_tokens": 16384,
-    "temperature": 0.3,
-    "max_retries": 5
+    "default_model": "qwen",           # Default generation model
+    "max_tokens": 16384,               # Maximum output tokens
+    "temperature": 0.3,                # Generation randomness
+    "max_retries": 5                   # API retry attempts
 }
 ```
 
-### 检索配置
+### Retrieval Configuration
+
 ```python
 RETRIEVAL_CONFIG = {
-    "k_retrieval": 20,
-    "k_final": 5,
-    "use_rerank": True,
-    "consistency_threshold": 0.4
+    "k_retrieval": 20,                 # Initial retrieval count
+    "k_final": 5,                      # Final document count
+    "use_rerank": True,                # Enable reranking
+    "consistency_threshold": 0.4       # Consistency filtering threshold
 }
 ```
+
+### Performance Configuration
+
+```python
+CONCURRENCY_CONFIG = {
+    "max_workers": 10,                 # Parallel processing threads
+    "max_retries": 3                   # Error retry attempts
+}
+```
+
+## 🛠️ Usage
+
+### Command Line Interface
+
+```bash
+# Run evaluation on test set
+python -m src.evaluation.evaluator
+
+# Process single requirement
+python -m src.modules.inference --requirement "Your requirement text"
+
+# Batch processing
+python -m src.modules.inference --input_file "requirements.json"
+```
+
+### Python API
+
+```python
+from src.modules.retriever.multi_retriever import MultiRetriever
+from src.modules.generator.base_generator import BaseGenerator
+from src.modules.inference import InferenceEngine
+
+# Initialize components
+retriever = MultiRetriever(knowledge_base_path="datasets/database.json")
+generator = BaseGenerator(model_name="qwen")
+engine = InferenceEngine(retriever, generator)
+
+# Generate requirements
+result = engine.process_requirement(
+    requirement="The system shall ensure data integrity",
+    context="Flight control system"
+)
+```
+
+## 📊 Evaluation
+
+### Metrics
+
+The framework evaluates generated requirements using multiple metrics:
+
+- **BERT Score**: Semantic similarity measurement
+- **ROUGE Score**: N-gram overlap evaluation  
+- **Consistency Score**: Internal coherence assessment
+- **Coverage Score**: Knowledge base utilization
+
+### Running Evaluation
+
+```bash
+# Full evaluation on test set
+python -m src.evaluation.evaluator --config_path config.py
+
+# Custom evaluation
+python -m src.evaluation.evaluator \
+    --test_file datasets/testset/gt.json \
+    --output_dir experiments_results/ \
+    --model qwen
+```
+
+<div align="center">
+
+**🔗 Links:** [Homepage](https://your-website.com) | [Documentation](https://docs.your-website.com) | [Issues](https://github.com/your-username/SR-RAG/issues)
+
+Made with ❤️ for Aviation Safety
+
+</div>

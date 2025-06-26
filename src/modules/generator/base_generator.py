@@ -1,18 +1,23 @@
 from abc import ABC, abstractmethod
 from modules.generator.client.openai_client import OpenAIClient
 from modules.generator.prompt.prompt_factory import create_prompt
+from config import get_prompt_template_path
 import json
 import re
 
 class BaseGenerator(ABC):
-    def __init__(self, model="qwen"):
+    def __init__(self, model="qwen", prompt_template_name=None, **kwargs):
         self.client = OpenAIClient(model)
+        self.prompt_template_name = prompt_template_name
         self.template_path = self._get_template_path()
     
-    @abstractmethod
     def _get_template_path(self):
         """返回对应的prompt模板路径"""
-        pass
+        if self.prompt_template_name:
+            return get_prompt_template_path(self.prompt_template_name)
+        else:
+            # 子类需要重写此方法
+            raise NotImplementedError("Must provide prompt_template_name or override _get_template_path")
 
     def _extract_content(self, response):
         """提取 API 响应内容"""

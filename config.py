@@ -11,8 +11,8 @@ PROJECT_ROOT = Path(__file__).parent.absolute()
 
 # 数据路径配置
 DATA_PATHS = {
-    "knowledge_base": "datasets/table/安全性分析准则_书.json",
-    "test_data": "datasets/tests/gt.json",
+    "knowledge_base": "datasets/database.json",
+    "test_data": "datasets/testset/gt.json",
     "stopwords_dir": "datasets/stopwords",
     "vector_db": "models/vector_db/safety_guidelines.index",
     "embedding_model": "models/BAAI/bge-large-zh-v1.5"
